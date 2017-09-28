@@ -1,23 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 using GeneticTree.Signal;
 using System;
 using System.Linq;
@@ -79,21 +59,3 @@ namespace GeneticTree
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?s
