@@ -5,11 +5,7 @@ using System.Text;
 
 namespace GeneticTree
 {
-    /// <summary>
-    ///     This class wires and evaluates dynamically a set of <see cref="ISignal" /> and a set of logical
-    ///     operators in string format in the form:
-    ///     Indicator1|Operator1|Indicator2|Operator2|...|IndicatorN|OperatorN|
-    /// </summary>
+
     public class Rule
     {
         private readonly ISignal _signal;
@@ -55,7 +51,6 @@ namespace GeneticTree
 
             return op(signal.IsTrue(), IsTrue(next));
         }
-
 
     }
 }

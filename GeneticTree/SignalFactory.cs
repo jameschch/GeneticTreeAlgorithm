@@ -135,6 +135,7 @@ namespace GeneticTree
                     break;
 
                 case TechicalIndicators.BollingerBands:
+                    //todo: bollinger bands setup
                     throw new NotImplementedException("WIP");
             }
 
