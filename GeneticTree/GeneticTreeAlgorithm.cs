@@ -1,78 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-using System;
+﻿using System;
 using QuantConnect.Data;
 using QuantConnect.Configuration;
 using QuantConnect.Data.Consolidators;
@@ -107,12 +33,11 @@ namespace GeneticTree
 
             _symbol = AddSecurity(SecurityType.Forex, "BTCUSD", Resolution.Tick, Market.GDAX, false, 3.3m, false).Symbol;
             SetBrokerageModel(QuantConnect.Brokerages.BrokerageName.GDAX);
-            //Securities["BTCUSD"].FeeModel = new MakerTakerFeeModel();
             var con = new TickConsolidator(new TimeSpan(1, 0, 0));
             SubscriptionManager.AddConsolidator(_symbol, con);
             SetBenchmark(_symbol);
 
-            //SetParameters(parametersToBacktest.ToDictionary(k => k.Key, v => v.Value.ToString()));
+            //SetParameters(config.ToDictionary(k => k.Key, v => v.Value.ToString()));
 
             var factory = new SignalFactory();
 
@@ -146,7 +71,48 @@ namespace GeneticTree
             }
         }
 
-        
+        //private static Dictionary<string, int> config = new Dictionary<string, int> {
+        //    {"EntryIndicator1",  0},
+        //    {"EntryIndicator2",  1},
+        //    {"EntryIndicator3",  -1},
+        //    {"EntryIndicator4",  2},
+        //    {"EntryIndicator5",  3},
+        //    {"EntryIndicator1Direction",  0},
+        //    {"EntryIndicator2Direction",  0},
+        //    {"EntryIndicator3Direction",  1},
+        //    {"EntryIndicator4Direction",  0},
+        //    {"EntryIndicator5Direction",  1},
+        //    {"EntryOperator1",  0},
+        //    {"EntryOperator2",  1},
+        //    {"EntryOperator3",  0},
+        //    {"EntryOperator4",  0},
+        //    {"EntryRelationship1",  0},
+        //    {"EntryRelationship2",  1},
+        //    {"EntryRelationship3",  1},
+        //    {"EntryRelationship4",  0},
+        //    {"ExitIndicator1",  6},
+        //    {"ExitIndicator2",  5},
+        //    {"ExitIndicator3",  4},
+        //    {"ExitIndicator4",  -1},
+        //    {"ExitIndicator5",  2},
+        //    {"ExitIndicator1Direction",  0},
+        //    {"ExitIndicator2Direction",  0},
+        //    {"ExitIndicator3Direction",  1},
+        //    {"ExitIndicator4Direction",  1},
+        //    {"ExitIndicator5Direction",  0},
+        //    {"ExitOperator1",  0},
+        //    {"ExitOperator2",  0},
+        //    {"ExitOperator3",  0},
+        //    {"ExitOperator4",  1},
+        //    {"ExitRelationship1",  0},
+        //    {"ExitRelationship2",  1},
+        //    {"ExitRelationship3",  0},
+        //    {"ExitRelationship4",  1},
+        //    {"period",  1},
+        //    {"slowPeriod",  2},
+        //    {"fastPeriod",  3},
+        //    {"signalPeriod",  4 }
+        //};
     }
 }
 

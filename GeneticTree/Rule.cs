@@ -8,32 +8,33 @@ namespace GeneticTree
 
     public class Rule
     {
-        private readonly ISignal _signal;
+
         static Func<bool, bool, bool> and = (a, b) => a && b;
         static Func<bool, bool, bool> or = (a, b) => a || b;
         static Func<bool, bool, bool> andFirst = (a, b) => (a && b);
         static Func<bool, bool, bool> orFirst = (a, b) => (a || b);
 
+        public ISignal Signal { get; }
+
         public Rule(ISignal signal)
         {
-            _signal = signal;
+            Signal = signal;
         }
 
         public bool IsReady()
         {
-            return IsReady(_signal);
+            return IsReady(Signal);
         }
 
         private bool IsReady(ISignal signal)
         {
-            return signal.IsReady && signal.Child == null || IsReady(signal.Child);
+            return signal.IsReady && (signal.Child == null || IsReady(signal.Child) || (signal.Sibling == null || IsReady(signal.Sibling)));
         }
 
         public bool IsTrue()
         {
-            return IsTrue(_signal);
+            return IsTrue(Signal);
         }
-
 
         public bool IsTrue(ISignal signal, bool? siblingIsTrue = null)
         {
