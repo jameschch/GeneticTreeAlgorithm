@@ -147,7 +147,8 @@ namespace GeneticTree
             int value;
             try
             {
-                value = Config.GetInt(key, int.Parse(_algorithm.GetParameter(key)));
+                int.TryParse(_algorithm.GetParameter(key), out value);
+                value = Config.GetInt(key, value);
                 _algorithm.Log(string.Format("Parameter {0} set to {1}", key, value));
             }
             catch (ArgumentNullException e)
