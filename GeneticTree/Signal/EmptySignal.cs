@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuantConnect.Data;
+using QuantConnect.Indicators;
 
 namespace GeneticTree.Signal
 {
@@ -27,6 +29,10 @@ namespace GeneticTree.Signal
         public bool IsTrue()
         {
             return _isTrue;
+        }
+
+        public void Update(BaseData data)
+        {
         }
     }
 }

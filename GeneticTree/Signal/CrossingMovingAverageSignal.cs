@@ -1,5 +1,6 @@
 ﻿using System;
 using QuantConnect.Indicators;
+using QuantConnect.Data;
 
 namespace GeneticTree.Signal
 {
@@ -18,7 +19,7 @@ namespace GeneticTree.Signal
     ///     This class keeps track of two crossing moving averages and updates a <see cref="CrossingMovingAveragesSignals" />
     ///     for each given state.
     /// </summary>
-    public class CrossingMovingAverageSignal : ISignal
+    public class CrossingMovingAverageSignal : SignalBase
     {
         private readonly CompositeIndicator<IndicatorDataPoint> _moving_average_difference;
         private readonly TradeRuleDirection _tradeRuleDirection;
@@ -41,7 +42,7 @@ namespace GeneticTree.Signal
         {
             _moving_average_difference = fast_moving_average.Minus(slow_moving_average);
             _moving_average_difference.Updated += ma_Updated;
-            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection) tradeRuleDirection;
+            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection)tradeRuleDirection;
         }
 
         /// <summary>
@@ -55,16 +56,10 @@ namespace GeneticTree.Signal
         /// <value>
         ///     <c>true</c> if this instance is ready; otherwise, <c>false</c>.
         /// </value>
-        public bool IsReady
+        public override bool IsReady
         {
             get { return _moving_average_difference.IsReady; }
         }
-
-        public ISignal Child { get; set; }
-
-        public ISignal Sibling { get; set; }
-
-        public Operator Operator { get; set; }
 
         /// <summary>
         ///     Gets the signal. Only used if the instance will be part of a <see cref="Rule" /> class.
@@ -74,7 +69,7 @@ namespace GeneticTree.Signal
         ///     <c>false</c>
         ///     otherwise.
         /// </returns>
-        public bool IsTrue()
+        public override bool IsTrue()
         {
             var signal = false;
             if (IsReady)
@@ -102,7 +97,7 @@ namespace GeneticTree.Signal
             var actualSignal = Math.Sign(_moving_average_difference);
             if (actualSignal == _lastSignal || _lastSignal == 0)
             {
-                Signal = (CrossingMovingAveragesSignals) actualSignal;
+                Signal = (CrossingMovingAveragesSignals)actualSignal;
             }
             else if (_lastSignal == -1 && actualSignal == 1)
             {
@@ -114,6 +109,11 @@ namespace GeneticTree.Signal
             }
 
             _lastSignal = actualSignal;
+        }
+        public override void Update(BaseData data)
+        {
+            _moving_average_difference.Update(new IndicatorDataPoint(data.Time, data.Price));
+            base.Update(data);
         }
     }
 }

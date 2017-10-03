@@ -1,5 +1,8 @@
 using System;
 using QuantConnect.Indicators;
+using QuantConnect.Data;
+using QuantConnect.Data.Market;
+using System.Linq;
 
 namespace GeneticTree.Signal
 {
@@ -28,7 +31,7 @@ namespace GeneticTree.Signal
     ///     for each given state.
     /// </summary>
     /// <seealso cref="QuantConnect.Algorithm.CSharp.ITechnicalIndicatorSignal" />
-    public class OscillatorSignal : ISignal
+    public class OscillatorSignal : SignalBase
     {
         private decimal _previousIndicatorValue;
         private OscillatorSignals _previousSignal;
@@ -69,7 +72,7 @@ namespace GeneticTree.Signal
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
         public OscillatorSignal(dynamic indicator)
         {
-            var defaultThresholds = new OscillatorThresholds {Lower = 20, Upper = 80};
+            var defaultThresholds = new OscillatorThresholds { Lower = 20, Upper = 80 };
             Initialize(ref indicator, ref defaultThresholds);
         }
 
@@ -83,21 +86,13 @@ namespace GeneticTree.Signal
         /// </summary>
         public OscillatorSignals Signal { get; private set; }
 
-        public ISignal Parent { get; set; }
-
-        public ISignal Child { get; set; }
-
-        public ISignal Sibling { get; set; }
-
-        public Operator Operator { get; set; }
-
         /// <summary>
         ///     Gets a value indicating whether this instance is ready.
         /// </summary>
         /// <value>
         ///     <c>true</c> if this instance is ready; otherwise, <c>false</c>.
         /// </value>
-        public bool IsReady
+        public override bool IsReady
         {
             get { return Indicator.IsReady; }
         }
@@ -110,7 +105,7 @@ namespace GeneticTree.Signal
         ///     <c>false</c>
         ///     otherwise.
         /// </returns>
-        public bool IsTrue()
+        public override bool IsTrue()
         {
             var signal = false;
             if (IsReady)
@@ -179,14 +174,14 @@ namespace GeneticTree.Signal
             OscillatorSignals actualPositionSignal)
         {
             OscillatorSignals actualSignal;
-            var previousSignalInt = (int) previousSignal;
-            var actualPositionSignalInt = (int) actualPositionSignal;
+            var previousSignalInt = (int)previousSignal;
+            var actualPositionSignalInt = (int)actualPositionSignal;
 
             if (actualPositionSignalInt == 0)
             {
                 if (Math.Abs(previousSignalInt) > 1)
                 {
-                    actualSignal = (OscillatorSignals) Math.Sign(previousSignalInt);
+                    actualSignal = (OscillatorSignals)Math.Sign(previousSignalInt);
                 }
                 else
                 {
@@ -198,11 +193,11 @@ namespace GeneticTree.Signal
                 if (previousSignalInt * actualPositionSignalInt <= 0 ||
                     Math.Abs(previousSignalInt + actualPositionSignalInt) == 3)
                 {
-                    actualSignal = (OscillatorSignals) (Math.Sign(actualPositionSignalInt) * 3);
+                    actualSignal = (OscillatorSignals)(Math.Sign(actualPositionSignalInt) * 3);
                 }
                 else
                 {
-                    actualSignal = (OscillatorSignals) (Math.Sign(actualPositionSignalInt) * 2);
+                    actualSignal = (OscillatorSignals)(Math.Sign(actualPositionSignalInt) * 2);
                 }
             }
             return actualSignal;
@@ -220,7 +215,30 @@ namespace GeneticTree.Signal
             _thresholds = thresholds;
             Indicator = indicator;
             indicator.Updated += new IndicatorUpdatedHandler(Indicator_Updated);
-            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection) tradeRuleDirection;
+            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection)tradeRuleDirection;
         }
+
+        public override void Update(BaseData data)
+        {
+            if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IBaseDataBar>)))
+            {
+                if (data.GetType().GetInterfaces().Contains(typeof(IBaseDataBar)))
+                {
+                    Indicator.Update((IBaseDataBar)data);
+                }
+            }
+            else if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IndicatorDataPoint>)))
+            {
+                Indicator.Update(new IndicatorDataPoint(data.Time, data.Value));
+            }
+            else
+            {
+                Indicator.Update(data);
+            }
+
+
+            base.Update(data);
+        }
+
     }
 }

@@ -55,6 +55,7 @@
     <Compile Include="GeneticTreeAlgorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule.cs" />
+    <Compile Include="Signal\SignalBase.cs" />
     <Compile Include="SignalFactory.cs" />
     <Compile Include="Signal\CrossingMovingAverageSignal.cs" />
     <Compile Include="Signal\EmptySignal.cs" />

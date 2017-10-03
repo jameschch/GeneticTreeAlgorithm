@@ -1,3 +1,5 @@
+using QuantConnect.Data;
+using QuantConnect.Indicators;
 using System.Collections.Generic;
 
 namespace GeneticTree.Signal
@@ -21,6 +23,8 @@ namespace GeneticTree.Signal
         Operator Operator { get; set; }
 
         ISignal Child { get; set; }
+
+        void Update(BaseData data);
 
     }
 

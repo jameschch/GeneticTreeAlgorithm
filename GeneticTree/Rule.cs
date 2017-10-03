@@ -1,4 +1,6 @@
 using GeneticTree.Signal;
+using QuantConnect.Data;
+using QuantConnect.Indicators;
 using System;
 using System.Linq;
 using System.Text;
@@ -51,6 +53,11 @@ namespace GeneticTree
             var next = isSibling ? signal.Sibling : signal.Child;
 
             return op(signal.IsTrue(), IsTrue(next));
+        }
+
+        public void Update(BaseData data)
+        {
+            Signal.Update(data);
         }
 
     }
