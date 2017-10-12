@@ -54,15 +54,15 @@
     </Reference>
     <Reference Include="Python.Runtime, Version=2.4.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean-Latest\Launcher\bin\Debug\Python.Runtime.dll</HintPath>
+      <HintPath>..\..\Lean_Latest\Launcher\bin\Debug\Python.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Algorithm, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean-Latest\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+      <HintPath>..\..\Lean_Latest\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Common, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean-Latest\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean_Latest\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
