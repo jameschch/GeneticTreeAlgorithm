@@ -30,7 +30,8 @@ namespace GeneticTree
 
         private bool IsReady(ISignal signal)
         {
-            return signal.IsReady && (signal.Child == null || IsReady(signal.Child) || (signal.Sibling == null || IsReady(signal.Sibling)));
+            return signal.IsReady && ((signal.Child == null && signal.Sibling == null) 
+                || ((signal.Child == null || IsReady(signal.Child)) && (signal.Sibling == null || IsReady(signal.Sibling))));
         }
 
         public bool IsTrue()

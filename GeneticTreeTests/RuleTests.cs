@@ -75,5 +75,41 @@ namespace GeneticTree.Tests
             current.Setup(p => p.IsTrue()).Returns(value);
         }
 
+        [Test()]
+        public void IsReadyTest()
+        {
+
+            var current = new Mock<ISignal>();
+            current.Setup(c => c.IsReady).Returns(true);
+            var last = 1;
+            var all = new List<Mock<ISignal>> { current };
+
+            for (var i = 0; i < 5; i++)
+            {
+                Mock<ISignal> next = new Mock<ISignal>();
+                CreateMock(current, next, last, Operator.AND, true);
+                next.Setup(c => c.IsReady).Returns(true);
+                all.Add(next);
+                if (last == 1)
+                {
+                    last = 0;
+                }
+                else
+                {
+                    last = 1;
+                }
+
+                current = next;
+            }
+
+            var rule = new Rule(current.Object);
+
+            Assert.IsTrue(rule.IsReady());
+
+            all.Last().Setup(a => a.IsReady).Returns(false);
+
+            Assert.IsFalse(rule.IsReady());
+        }
+
     }
 }
