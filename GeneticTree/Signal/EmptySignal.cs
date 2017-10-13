@@ -18,8 +18,6 @@ namespace GeneticTree.Signal
             _isTrue = isTrue;
         }
 
-        public ISignal Child { get; set; }
-
         public bool IsReady { get { return true; } }
 
         public Operator Operator { get; set; }

@@ -27,19 +27,17 @@ namespace GeneticTree.Tests
 
             var actual = unit.Create(fakeAlgorithm, fakeSymbol, true);
 
-            Assert.AreEqual(Operator.AND, actual.Signal.Operator);
-            Assert.AreEqual(Operator.OR, actual.Signal.Sibling.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Child.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Child.Child.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Child.Child.Sibling.Operator);
+            Assert.AreEqual(Operator.And, actual.Signal.Operator);
+            Assert.AreEqual(Operator.Or, actual.Signal.Sibling.Operator);
+            Assert.AreEqual(Operator.OrInclusive, actual.Signal.Sibling.Sibling.Operator);
+            Assert.AreEqual(Operator.Not, actual.Signal.Sibling.Sibling.Sibling.Operator);
 
             actual = unit.Create(fakeAlgorithm, fakeSymbol, false);
 
-            Assert.AreEqual(Operator.AND, actual.Signal.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Child.Operator);
-            Assert.AreEqual(Operator.OR, actual.Signal.Sibling.Child.Sibling.Operator);
-            Assert.AreEqual(Operator.AND, actual.Signal.Sibling.Child.Sibling.Child.Operator);
+            Assert.AreEqual(Operator.Nor, actual.Signal.Operator);
+            Assert.AreEqual(Operator.NorInclusive, actual.Signal.Sibling.Operator);
+            Assert.AreEqual(Operator.And, actual.Signal.Sibling.Sibling.Operator);
+            Assert.AreEqual(Operator.Or, actual.Signal.Sibling.Sibling.Sibling.Operator);
         }
 
         protected class SignalFactoryWrapper : SignalFactory
@@ -58,12 +56,8 @@ namespace GeneticTree.Tests
                 {"EntryIndicator5Direction",  1},
                 {"EntryOperator1",  0},
                 {"EntryOperator2",  1},
-                {"EntryOperator3",  0},
-                {"EntryOperator4",  0},
-                {"EntryRelationship1",  0},
-                {"EntryRelationship2",  1},
-                {"EntryRelationship3",  1},
-                {"EntryRelationship4",  0},
+                {"EntryOperator3",  2},
+                {"EntryOperator4",  3},
                 {"ExitIndicator1",  6},
                 {"ExitIndicator2",  5},
                 {"ExitIndicator3",  4},
@@ -74,14 +68,10 @@ namespace GeneticTree.Tests
                 {"ExitIndicator3Direction",  1},
                 {"ExitIndicator4Direction",  1},
                 {"ExitIndicator5Direction",  0},
-                {"ExitOperator1",  0},
-                {"ExitOperator2",  0},
+                {"ExitOperator1",  4},
+                {"ExitOperator2",  5},
                 {"ExitOperator3",  0},
                 {"ExitOperator4",  1},
-                {"ExitRelationship1",  0},
-                {"ExitRelationship2",  1},
-                {"ExitRelationship3",  0},
-                {"ExitRelationship4",  1},
                 {"period",  1},
                 {"slowPeriod",  2},
                 {"fastPeriod",  3},

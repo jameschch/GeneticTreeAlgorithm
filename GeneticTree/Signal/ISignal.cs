@@ -22,8 +22,6 @@ namespace GeneticTree.Signal
 
         Operator Operator { get; set; }
 
-        ISignal Child { get; set; }
-
         void Update(BaseData data);
 
     }
@@ -50,16 +48,12 @@ namespace GeneticTree.Signal
 
     public enum Operator
     {
-        AND,
-        OR,
-        //todo: not operator
-        NOT
-    }
-
-    public enum Relationship
-    {
-        Sibling = 0,
-        Child = 1
+        And = 0,
+        Or = 1,
+        OrInclusive = 2,
+        Not = 3,
+        Nor = 4,
+        NorInclusive = 5
     }
 
 }

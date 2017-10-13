@@ -16,31 +16,38 @@ namespace GeneticTree.Tests
     public class RuleTests
     {
 
-        [TestCase(new[] { 1 }, new[] { Operator.AND }, new[] { true, true }, true, "true && true")]
-        [TestCase(new[] { 1 }, new[] { Operator.OR }, new[] { true, false }, true, "true || false")]
-        [TestCase(new[] { 1 }, new[] { Operator.OR }, new[] { false, false }, false, "false || false")]
+        [TestCase(new[] { Operator.And }, new[] { true, true }, true, "true && true")]
+        [TestCase(new[] { Operator.Or }, new[] { true, false }, true, "true || false")]
+        [TestCase(new[] { Operator.Or }, new[] { false, false }, false, "false || false")]
 
-        [TestCase(new[] { 1, 1 }, new[] { Operator.AND, Operator.AND }, new[] { true, true, true }, true, "true && true && true")]
-        [TestCase(new[] { 1, 1 }, new[] { Operator.AND, Operator.AND }, new[] { true, true, false }, false, "true && true && false")]
-        [TestCase(new[] { 1, 1 }, new[] { Operator.AND, Operator.OR }, new[] { true, false, true }, true, "true && false || true")]
-        [TestCase(new[] { 0, 1 }, new[] { Operator.AND, Operator.OR }, new[] { true, false, true }, true, "true && (false || true)")]
-        [TestCase(new[] { 0, 1 }, new[] { Operator.AND, Operator.OR }, new[] { true, false, false }, false, "true && (false || false)")]
+        [TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, true }, true, "true && true && true")]
+        [TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, false }, false, "true && true && false")]
+        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, true }, true, "true && false || true")]
+        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, true }, true, "true && (false || true)")]
+        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, false }, false, "true && (false || false)")]
 
-        [TestCase(new[] { 1, 1, 0 }, new[] { Operator.AND, Operator.OR, Operator.AND }, new[] { true, true, false, false }, true, "true && true || (false && false)")]
-        [TestCase(new[] { 1, 1, 0 }, new[] { Operator.AND, Operator.OR, Operator.AND }, new[] { true, false, false, false }, false, "true && false || (false && false)")]
-        [TestCase(new[] { 1, 1, 0 }, new[] { Operator.OR, Operator.AND, Operator.OR }, new[] { true, false, true, false }, true, "true || false && (true || false)")]
-        [TestCase(new[] { 0, 1, 0 }, new[] { Operator.OR, Operator.AND, Operator.OR }, new[] { true, false, false, false }, true, "(true || false && (false || false))")]
-        [TestCase(new[] { 0, 1, 0 }, new[] { Operator.OR, Operator.AND, Operator.AND }, new[] { true, false, false, false }, true, "(true || false && (false && false))")]
-        [TestCase(new[] { 0, 1, 0 }, new[] { Operator.OR, Operator.AND, Operator.AND }, new[] { true, false, true, true }, true, "(true || false && (true && true))")]
-        public void IsTrueTest(int[] relationships, Operator[] operators, bool[] values, bool expected, string expression)
+        [TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, true, false, false }, true, "true && true || false && false")]
+        [TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, false, false, false }, false, "true && false || false && false")]
+        [TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, true, false }, true, "true || false && (true || false)")]
+        [TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, false, false }, true, "(true || false && (false || false))")]
+        [TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, false, false }, true, "(true || false && false && false)")]
+        [TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, true, true }, true, "(true || false && true && true)")]
+
+        [TestCase(new[] { Operator.And, Operator.Not }, new[] { true, true, true }, false, "true && true && !true")]
+        [TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !true")]
+        [TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !false")]
+        [TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, false }, true, "true && (false || !false)")]
+        [TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, true }, false, "true && (false || !true)")]
+
+        public void IsTrueTest(Operator[] operators, bool[] values, bool expected, string expression)
         {
             Mock<ISignal> current = new Mock<ISignal>();
             Mock<ISignal> root = current;
 
-            for (var i = 0; i < relationships.Count(); i++)
+            for (var i = 0; i < operators.Count(); i++)
             {
                 Mock<ISignal> next = new Mock<ISignal>();
-                CreateMock(current, next, relationships[i], operators[i], values[i]);
+                CreateMock(current, next, operators[i], values[i]);
                 current = next;
             }
 
@@ -58,20 +65,10 @@ namespace GeneticTree.Tests
             Assert.AreEqual(expressoActual, actual, expression);
         }
 
-        private void CreateMock(Mock<ISignal> current, Mock<ISignal> next, int relationship, Operator @operator, bool value)
+        private void CreateMock(Mock<ISignal> current, Mock<ISignal> next, Operator op, bool value)
         {
-
-            if ((Relationship)relationship == Relationship.Child)
-            {
-                current.Setup(p => p.Child).Returns(next.Object);
-            }
-            else
-            {
-                current.Setup(p => p.Sibling).Returns(next.Object);
-            }
-
-            current.Setup(p => p.Operator).Returns(@operator);
-
+            current.Setup(p => p.Sibling).Returns(next.Object);
+            current.Setup(p => p.Operator).Returns(op);
             current.Setup(p => p.IsTrue()).Returns(value);
         }
 
@@ -81,23 +78,14 @@ namespace GeneticTree.Tests
 
             var current = new Mock<ISignal>();
             current.Setup(c => c.IsReady).Returns(true);
-            var last = 1;
             var all = new List<Mock<ISignal>> { current };
 
             for (var i = 0; i < 5; i++)
             {
                 Mock<ISignal> next = new Mock<ISignal>();
-                CreateMock(current, next, last, Operator.AND, true);
+                CreateMock(current, next, Operator.And, true);
                 next.Setup(c => c.IsReady).Returns(true);
                 all.Add(next);
-                if (last == 1)
-                {
-                    last = 0;
-                }
-                else
-                {
-                    last = 1;
-                }
 
                 current = next;
             }

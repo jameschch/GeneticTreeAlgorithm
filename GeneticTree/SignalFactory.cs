@@ -46,14 +46,7 @@ namespace GeneticTree
                 else
                 {
                     //root won't have parent to add to
-                    if ((Relationship)GetConfigValue(entryOrExit + "Relationship" + (i - 1)) == Relationship.Child)
-                    {
-                        parent.Child = item;
-                    }
-                    else
-                    {
-                        parent.Sibling = item;
-                    }
+                    parent.Sibling = item;
                 }
 
                 //last item won't have operator

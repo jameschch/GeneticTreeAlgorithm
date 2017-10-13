@@ -11,7 +11,6 @@ namespace GeneticTree.Signal
     public abstract class SignalBase : ISignal
     {
 
-        public ISignal Child { get; set; }
         public ISignal Sibling { get; set; }
         public Operator Operator { get; set; }
 
@@ -24,10 +23,6 @@ namespace GeneticTree.Signal
             if (Sibling != null)
             {
                 Sibling.Update(data);
-            }
-            if (Child != null)
-            {
-                Child.Update(data);
             }
         }
 
