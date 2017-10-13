@@ -19,6 +19,7 @@ namespace GeneticTree
         int _signalPeriod;
         QCAlgorithm _algorithm;
         Resolution _resolution;
+        private bool _enableParameterLog = false;
 
         public override Rule Create(QCAlgorithm algorithm, Symbol pair, bool isEntryRule, Resolution resolution = Resolution.Hour)
         {
@@ -150,7 +151,10 @@ namespace GeneticTree
             {
                 int.TryParse(_algorithm.GetParameter(key), out value);
                 value = Config.GetInt(key, value);
-                _algorithm.Log(string.Format("Parameter {0} set to {1}", key, value));
+                if (_enableParameterLog)
+                {
+                    _algorithm.Log(string.Format("Parameter {0} set to {1}", key, value));
+                }
             }
             catch (ArgumentNullException e)
             {
