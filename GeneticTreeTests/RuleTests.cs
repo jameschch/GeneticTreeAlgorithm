@@ -46,17 +46,19 @@ namespace GeneticTree.Tests
         {
             Mock<ISignal> current = new Mock<ISignal>();
             Mock<ISignal> root = current;
+            List<ISignal> list = new List<ISignal>();
 
             for (var i = 0; i < operators.Count(); i++)
             {
                 Mock<ISignal> next = new Mock<ISignal>();
                 CreateMock(current, next, operators[i], values[i]);
+                list.Add(current.Object);
                 current = next;
             }
 
             current.Setup(p => p.IsTrue()).Returns(values.Last());
 
-            var unit = new Rule(root.Object);
+            var unit = new Rule(list);
 
             var actual = unit.IsTrue();
 
@@ -93,7 +95,7 @@ namespace GeneticTree.Tests
                 current = next;
             }
 
-            var rule = new Rule(current.Object);
+            var rule = new Rule(all.Select(a => a.Object));
 
             Assert.IsTrue(rule.IsReady());
 

@@ -1,7 +1,9 @@
+using DynamicExpresso;
 using GeneticTree.Signal;
 using QuantConnect.Data;
 using QuantConnect.Indicators;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -11,74 +13,68 @@ namespace GeneticTree
     public class Rule
     {
 
-        static Func<bool, bool, bool> and = (a, b) => a && b;
-        static Func<bool, bool, bool> or = (a, b) => a || b;
-        static Func<bool, bool, bool> not = (a, b) => a && !b;
-        static Func<bool, bool, bool> orInclusive = (a, b) => (a || b);
-        static Func<bool, bool, bool> nor = (a, b) => (a || !b);
-        static Func<bool, bool, bool> norInclusive = (a, b) => (a || !b);
+        public IEnumerable<ISignal> List { get; }
 
-        public ISignal[] Signal { get; }
-
-        public Rule(ISignal[] signal)
+        public Rule(IEnumerable<ISignal> signal)
         {
-            Signal = signal;
+            List = signal;
         }
 
         public bool IsReady()
         {
-            return Signal.All(s => s.IsReady);
+            return List.All(s => s.IsReady);
         }
 
         public bool IsTrue()
         {
-            foreach (var item in Signal)
+            var interpreter = new Interpreter();
+
+            string expression = "";
+
+            foreach (var item in List)
             {
-                Func<bool, bool, bool> op = null;
-
-                string expression;
-
-                switch (item.Operator)
-                {
-                    case Operator.Or:
-                        op = or;
-                        break;
-                    case Operator.OrInclusive:
-                        op = orInclusive;
-                        break;
-                    case Operator.Not:
-                        op = not;
-                        break;
-                    case Operator.Nor:
-                        op = nor;
-                        break;
-                    case Operator.NorInclusive:
-                        op = norInclusive;
-                        break;
-                    default:
-                        op = and;
-                        break;
-                };
 
                 bool isTrue = item.IsTrue();
                 bool nextTrue = item.Sibling != null ? item.Sibling.IsTrue() : true;
 
-                if (new [] { and, or, not }.Contains(op))
+                if (List.First() == item)
                 {
 
                 }
 
+                if (item.Operator == Operator.And)
+                {
+                    expression += $" {isTrue.ToString().ToLower()} && {nextTrue.ToString().ToLower()} ";
+                }
+                else if (item.Operator == Operator.Or)
+                {
+                    expression += $" {isTrue.ToString().ToLower()} || {nextTrue.ToString().ToLower()} ";
+                }
+                else if (item.Operator == Operator.Not)
+                {
+                    expression += $" {isTrue.ToString().ToLower()} && !{nextTrue.ToString().ToLower()} ";
+                }
+                else if (item.Operator == Operator.Nor)
+                {
+                    expression += $" ({isTrue.ToString().ToLower()} || !{nextTrue.ToString().ToLower()}) ";
+                }
+                else if (item.Operator == Operator.OrInclusive)
+                {
+                    expression += $" ({isTrue.ToString().ToLower()} || {nextTrue.ToString().ToLower()}) ";
+                }
+                else if (item.Operator == Operator.NorInclusive)
+                {
+                    expression += $" ({isTrue.ToString().ToLower()} || !{nextTrue.ToString().ToLower()}) ";
+                }
+
             }
 
-
-            var next = signal.Sibling;
-
-            return op(signal.IsTrue(), IsTrue(next));
+            return (bool)interpreter.Eval(expression);          
         }
 
         public void Update(BaseData data)
         {
-            Signal.Update(data);
+            List.First().Update(data);
         }
 
     }
