@@ -9,7 +9,7 @@ using QuantConnect;
 
 namespace GeneticTree
 {
-    public partial class GeneticTreeAlgorithm : QCAlgorithm
+    public partial class GeneticTreeAlgorithmExample : QCAlgorithm
     {
         private Rule _entry;
         private Rule _exit;
@@ -31,10 +31,10 @@ namespace GeneticTree
                 RuntimeStatistics["ID"] = GetParameter("ID");
             }
 
-            _symbol = AddSecurity(SecurityType.Forex, "BTCUSD", Resolution.Tick, Market.GDAX, false, 3.3m, false).Symbol;
-            SetBrokerageModel(QuantConnect.Brokerages.BrokerageName.GDAX);
+            _symbol = AddSecurity(SecurityType.Crypto, "BTCUSD", Resolution.Tick, Market.GDAX, false, 1m, false).Symbol;
+            SetBrokerageModel(QuantConnect.Brokerages.BrokerageName.GDAX, AccountType.Cash);
             var con = new TickConsolidator(new TimeSpan(1, 0, 0));
-            SubscriptionManager.AddConsolidator(_symbol, con);
+
             SetBenchmark(_symbol);
 
             //SetParameters(config.ToDictionary(k => k.Key, v => v.Value.ToString()));
@@ -43,6 +43,7 @@ namespace GeneticTree
 
             _entry = factory.Create(this, _symbol, true);
             _exit = factory.Create(this, _symbol, false);
+
         }
 
         public override void OnData(Slice e)
@@ -57,7 +58,7 @@ namespace GeneticTree
             {
                 if (_entry.IsTrue())
                 {
-                    SetHoldings(_symbol, percentage: 3m);
+                    SetHoldings(_symbol, 0.9m);
                     Log("buy: " + Portfolio[_symbol].Price + " Portfolio:" + Portfolio.TotalPortfolioValue);
                 };
             }
@@ -65,7 +66,7 @@ namespace GeneticTree
             {
                 if (_exit.IsTrue())
                 {
-                    Liquidate(_symbol);
+                    Liquidate();
                     Log("liq: " + Portfolio[_symbol].Price + " Portfolio:" + Portfolio.TotalPortfolioValue);
                 }
             }
