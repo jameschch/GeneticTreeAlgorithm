@@ -24,12 +24,14 @@ namespace GeneticTree.Signal
         private readonly CompositeIndicator<IndicatorDataPoint> _moving_average_difference;
         private readonly TradeRuleDirection _tradeRuleDirection;
         private int _lastSignal;
+        IndicatorBase<IndicatorDataPoint> _fast { get; set; }
+        IndicatorBase<IndicatorDataPoint> _slow { get; set; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CrossingMovingAverageSignal" /> class.
         /// </summary>
-        /// <param name="fast_moving_average">The fast moving average.</param>
-        /// <param name="slow_moving_average">The slow moving average.</param>
+        /// <param name="fast">The fast moving average.</param>
+        /// <param name="slow">The slow moving average.</param>
         /// <param name="tradeRuleDirection">
         ///     The trade rule direction. Only used if the instance will be part of a
         ///     <see cref="Rule" /> class
@@ -37,10 +39,12 @@ namespace GeneticTree.Signal
         /// <remarks>
         ///     Both Moving Averages must be registered BEFORE being used by this constructor.
         /// </remarks>
-        public CrossingMovingAverageSignal(IndicatorBase<IndicatorDataPoint> fast_moving_average,
-            IndicatorBase<IndicatorDataPoint> slow_moving_average, TradeRuleDirection? tradeRuleDirection = null)
+        public CrossingMovingAverageSignal(IndicatorBase<IndicatorDataPoint> fast,
+            IndicatorBase<IndicatorDataPoint> slow, TradeRuleDirection? tradeRuleDirection = null)
         {
-            _moving_average_difference = fast_moving_average.Minus(slow_moving_average);
+            _fast = fast;
+            _slow = slow;
+            _moving_average_difference = fast.Minus(slow);
             _moving_average_difference.Updated += ma_Updated;
             if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection)tradeRuleDirection;
         }
@@ -112,7 +116,8 @@ namespace GeneticTree.Signal
         }
         public override void Update(BaseData data)
         {
-            _moving_average_difference.Update(new IndicatorDataPoint(data.Time, data.Price));
+            _fast.Update(new IndicatorDataPoint(data.Time, data.Price));
+            _slow.Update(new IndicatorDataPoint(data.Time, data.Price));
             base.Update(data);
         }
     }
