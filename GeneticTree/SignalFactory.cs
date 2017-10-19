@@ -34,6 +34,7 @@ namespace GeneticTree
 
             ISignal root = null;
             ISignal parent = null;
+            List<ISignal> list = new List<ISignal>();
 
             for (var i = 1; i <= _maximumSignals; i++)
             {
@@ -56,11 +57,12 @@ namespace GeneticTree
                     Operator op = (Operator)GetConfigValue(key);
                     item.Operator = op;
                 }
-
                 parent = item;
+
+                list.Add(item);
             }
 
-            return new Rule(root);
+            return new Rule(list.ToArray());
         }
 
         protected override ISignal CreateIndicator(Symbol pair, int i, string entryOrExit)

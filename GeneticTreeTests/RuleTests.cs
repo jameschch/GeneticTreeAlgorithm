@@ -16,28 +16,31 @@ namespace GeneticTree.Tests
     public class RuleTests
     {
 
-        [TestCase(new[] { Operator.And }, new[] { true, true }, true, "true && true")]
-        [TestCase(new[] { Operator.Or }, new[] { true, false }, true, "true || false")]
-        [TestCase(new[] { Operator.Or }, new[] { false, false }, false, "false || false")]
+        //[TestCase(new[] { Operator.And }, new[] { true, true }, true, "true && true")]
+        //[TestCase(new[] { Operator.Or }, new[] { true, false }, true, "true || false")]
+        //[TestCase(new[] { Operator.Or }, new[] { false, false }, false, "false || false")]
 
-        [TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, true }, true, "true && true && true")]
-        [TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, false }, false, "true && true && false")]
-        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, true }, true, "true && false || true")]
-        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, true }, true, "true && (false || true)")]
-        [TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, false }, false, "true && (false || false)")]
+        //[TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, true }, true, "true && true && true")]
+        //[TestCase(new[] { Operator.And, Operator.And }, new[] { true, true, false }, false, "true && true && false")]
 
-        [TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, true, false, false }, true, "true && true || false && false")]
-        [TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, false, false, false }, false, "true && false || false && false")]
-        [TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, true, false }, true, "true || false && (true || false)")]
-        [TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, false, false }, true, "(true || false && (false || false))")]
-        [TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, false, false }, true, "(true || false && false && false)")]
-        [TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, true, true }, true, "(true || false && true && true)")]
+        [TestCase(new[] { Operator.And, Operator.Or  }, new[] { false, true, true }, true, "false && true || true")]
+        [TestCase(new[] { Operator.And, Operator.OrInclusive }, new[] { false, true, true }, false, "false && (true || true)")]
 
-        [TestCase(new[] { Operator.And, Operator.Not }, new[] { true, true, true }, false, "true && true && !true")]
-        [TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !true")]
-        [TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !false")]
-        [TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, false }, true, "true && (false || !false)")]
-        [TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, true }, false, "true && (false || !true)")]
+        //[TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, true }, true, "true && (false || true)")]
+        //[TestCase(new[] { Operator.And, Operator.Or }, new[] { true, false, false }, false, "true && (false || false)")]
+
+        //[TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, true, false, false }, true, "true && true || false && false")]
+        //[TestCase(new[] { Operator.And, Operator.Or, Operator.And }, new[] { true, false, false, false }, false, "true && false || false && false")]
+        //[TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, true, false }, true, "true || false && (true || false)")]
+        //[TestCase(new[] { Operator.Or, Operator.And, Operator.Or }, new[] { true, false, false, false }, true, "(true || false && (false || false))")]
+        //[TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, false, false }, true, "(true || false && false && false)")]
+        //[TestCase(new[] { Operator.Or, Operator.And, Operator.And }, new[] { true, false, true, true }, true, "(true || false && true && true)")]
+
+        //[TestCase(new[] { Operator.And, Operator.Not }, new[] { true, true, true }, false, "true && true && !true")]
+        //[TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !true")]
+        //[TestCase(new[] { Operator.And, Operator.Nor }, new[] { true, true, true }, true, "true && true || !false")]
+        //[TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, false }, true, "true && (false || !false)")]
+        //[TestCase(new[] { Operator.And, Operator.NorInclusive }, new[] { true, false, true }, false, "true && (false || !true)")]
 
         public void IsTrueTest(Operator[] operators, bool[] values, bool expected, string expression)
         {

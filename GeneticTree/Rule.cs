@@ -18,58 +18,58 @@ namespace GeneticTree
         static Func<bool, bool, bool> nor = (a, b) => (a || !b);
         static Func<bool, bool, bool> norInclusive = (a, b) => (a || !b);
 
-        public ISignal Signal { get; }
+        public ISignal[] Signal { get; }
 
-        public Rule(ISignal signal)
+        public Rule(ISignal[] signal)
         {
             Signal = signal;
         }
 
         public bool IsReady()
         {
-            return IsReady(Signal);
-        }
-
-        private bool IsReady(ISignal signal)
-        {
-            return signal.IsReady && (signal.Sibling == null || IsReady(signal.Sibling));
+            return Signal.All(s => s.IsReady);
         }
 
         public bool IsTrue()
         {
-            return IsTrue(Signal);
-        }
-
-        public bool IsTrue(ISignal signal, bool? siblingIsTrue = null)
-        {
-            if (signal.Sibling == null)
+            foreach (var item in Signal)
             {
-                return signal.IsTrue();
+                Func<bool, bool, bool> op = null;
+
+                string expression;
+
+                switch (item.Operator)
+                {
+                    case Operator.Or:
+                        op = or;
+                        break;
+                    case Operator.OrInclusive:
+                        op = orInclusive;
+                        break;
+                    case Operator.Not:
+                        op = not;
+                        break;
+                    case Operator.Nor:
+                        op = nor;
+                        break;
+                    case Operator.NorInclusive:
+                        op = norInclusive;
+                        break;
+                    default:
+                        op = and;
+                        break;
+                };
+
+                bool isTrue = item.IsTrue();
+                bool nextTrue = item.Sibling != null ? item.Sibling.IsTrue() : true;
+
+                if (new [] { and, or, not }.Contains(op))
+                {
+
+                }
+
             }
 
-            Func<bool, bool, bool> op = null;
-
-            switch (signal.Operator)
-            {
-                case Operator.Or:
-                    op = or;
-                    break;
-                case Operator.OrInclusive:
-                    op = orInclusive;
-                    break;
-                case Operator.Not:
-                    op = not;
-                    break;
-                case Operator.Nor:
-                    op = nor;
-                    break;
-                case Operator.NorInclusive:
-                    op = norInclusive;
-                    break;
-                default:
-                    op = and;
-                    break;
-            };
 
             var next = signal.Sibling;
 
