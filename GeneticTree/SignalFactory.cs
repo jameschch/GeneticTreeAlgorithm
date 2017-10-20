@@ -12,6 +12,7 @@ namespace GeneticTree
     public class SignalFactory : AbstractSignalFactory
     {
 
+        //todo: derive maximum signals from config keys
         private readonly int _maximumSignals = 5;
         int _period;
         int _slowPeriod;
@@ -21,7 +22,7 @@ namespace GeneticTree
         Resolution _resolution;
         private bool _enableParameterLog = false;
 
-        public override Rule Create(QCAlgorithm algorithm, Symbol pair, bool isEntryRule, Resolution resolution = Resolution.Hour)
+        public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour)
         {
             _algorithm = algorithm;
             _resolution = resolution;
@@ -32,22 +33,15 @@ namespace GeneticTree
             _fastPeriod = GetConfigValue("fastPeriod");
             _signalPeriod = GetConfigValue("signalPeriod");
 
-            ISignal root = null;
             ISignal parent = null;
             List<ISignal> list = new List<ISignal>();
 
             for (var i = 1; i <= _maximumSignals; i++)
             {
-                var item = CreateIndicator(pair, i, entryOrExit);
-                if (root == null)
+                var item = CreateIndicator(symbol, i, entryOrExit);
+                if (parent != null)
                 {
-                    root = item;
-                    parent = root;
-                }
-                else
-                {
-                    //root won't have parent to add to
-                    parent.Sibling = item;
+                    parent.Child = item;
                 }
 
                 //last item won't have operator
@@ -57,12 +51,14 @@ namespace GeneticTree
                     Operator op = (Operator)GetConfigValue(key);
                     item.Operator = op;
                 }
+
+                item.Parent = parent;
                 parent = item;
 
                 list.Add(item);
             }
 
-            return new Rule(list.ToArray());
+            return new Rule(list);
         }
 
         protected override ISignal CreateIndicator(Symbol pair, int i, string entryOrExit)
@@ -163,7 +159,7 @@ namespace GeneticTree
 
     public abstract class AbstractSignalFactory
     {
-        public abstract Rule Create(QCAlgorithm algorithm, Symbol pair, bool isEntryRule, Resolution resolution = Resolution.Hour);
+        public abstract Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour);
         protected abstract ISignal CreateIndicator(Symbol pair, int i, string entryOrExit);
         protected abstract int GetConfigValue(string key);
     }

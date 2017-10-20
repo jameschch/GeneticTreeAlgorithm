@@ -11,7 +11,10 @@ namespace GeneticTree.Signal
     public abstract class SignalBase : ISignal
     {
 
-        public ISignal Sibling { get; set; }
+        public ISignal Child { get; set; }
+
+        public ISignal Parent { get; set; }
+
         public Operator Operator { get; set; }
 
         public abstract bool IsReady { get; }
@@ -20,9 +23,9 @@ namespace GeneticTree.Signal
 
         public virtual void Update(BaseData data)
         {
-            if (Sibling != null)
+            if (Child != null)
             {
-                Sibling.Update(data);
+                Child.Update(data);
             }
         }
 

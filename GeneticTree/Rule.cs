@@ -29,47 +29,48 @@ namespace GeneticTree
         {
             var interpreter = new Interpreter();
 
-            string expression = "";
+            StringBuilder expression = new StringBuilder();
 
             foreach (var item in List)
             {
 
-                bool isTrue = item.IsTrue();
-                bool nextTrue = item.Sibling != null ? item.Sibling.IsTrue() : true;
+                string isTrue = item.IsTrue().ToString().ToLower();
 
-                if (List.First() == item)
+                if (new[] { Operator.NorInclusive, Operator.OrInclusive }.Contains(item.Operator))
                 {
-
+                    isTrue = "(" + isTrue;
                 }
 
-                if (item.Operator == Operator.And)
+                if (item.Parent != null && new[] { Operator.NorInclusive, Operator.OrInclusive }.Contains(item.Parent.Operator))
                 {
-                    expression += $" {isTrue.ToString().ToLower()} && {nextTrue.ToString().ToLower()} ";
+                    isTrue += ")";
                 }
-                else if (item.Operator == Operator.Or)
+
+                expression.Append(isTrue);
+
+                if (item.Child != null)
                 {
-                    expression += $" {isTrue.ToString().ToLower()} || {nextTrue.ToString().ToLower()} ";
-                }
-                else if (item.Operator == Operator.Not)
-                {
-                    expression += $" {isTrue.ToString().ToLower()} && !{nextTrue.ToString().ToLower()} ";
-                }
-                else if (item.Operator == Operator.Nor)
-                {
-                    expression += $" ({isTrue.ToString().ToLower()} || !{nextTrue.ToString().ToLower()}) ";
-                }
-                else if (item.Operator == Operator.OrInclusive)
-                {
-                    expression += $" ({isTrue.ToString().ToLower()} || {nextTrue.ToString().ToLower()}) ";
-                }
-                else if (item.Operator == Operator.NorInclusive)
-                {
-                    expression += $" ({isTrue.ToString().ToLower()} || !{nextTrue.ToString().ToLower()}) ";
+                    if (item.Operator == Operator.And)
+                    {
+                        expression.Append(" && ");
+                    }
+                    else if (new[] { Operator.Or, Operator.OrInclusive }.Contains(item.Operator))
+                    {
+                        expression.Append(" || ");
+                    }
+                    else if (item.Operator == Operator.Not)
+                    {
+                        expression.Append(" && !");
+                    }
+                    else if (new[] { Operator.Nor, Operator.NorInclusive }.Contains(item.Operator))
+                    {
+                        expression.Append(" || !");
+                    }
                 }
 
             }
 
-            return (bool)interpreter.Eval(expression);          
+            return (bool)interpreter.Eval(expression.ToString());
         }
 
         public void Update(BaseData data)

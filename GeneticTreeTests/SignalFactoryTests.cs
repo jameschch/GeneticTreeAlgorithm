@@ -28,16 +28,16 @@ namespace GeneticTree.Tests
             var actual = unit.Create(fakeAlgorithm, fakeSymbol, true);
 
             Assert.AreEqual(Operator.And, actual.List.First().Operator);
-            Assert.AreEqual(Operator.Or, actual.List.First().Sibling.Operator);
-            Assert.AreEqual(Operator.OrInclusive, actual.List.First().Sibling.Sibling.Operator);
-            Assert.AreEqual(Operator.Not, actual.List.First().Sibling.Sibling.Sibling.Operator);
+            Assert.AreEqual(Operator.Or, actual.List.First().Child.Operator);
+            Assert.AreEqual(Operator.OrInclusive, actual.List.First().Child.Child.Operator);
+            Assert.AreEqual(Operator.Not, actual.List.First().Child.Child.Child.Operator);
 
             actual = unit.Create(fakeAlgorithm, fakeSymbol, false);
 
             Assert.AreEqual(Operator.Nor, actual.List.First().Operator);
-            Assert.AreEqual(Operator.NorInclusive, actual.List.First().Sibling.Operator);
-            Assert.AreEqual(Operator.And, actual.List.First().Sibling.Sibling.Operator);
-            Assert.AreEqual(Operator.Or, actual.List.First().Sibling.Sibling.Sibling.Operator);
+            Assert.AreEqual(Operator.NorInclusive, actual.List.First().Child.Operator);
+            Assert.AreEqual(Operator.And, actual.List.First().Child.Child.Operator);
+            Assert.AreEqual(Operator.Or, actual.List.First().Child.Child.Child.Operator);
         }
 
         protected class SignalFactoryWrapper : SignalFactory
