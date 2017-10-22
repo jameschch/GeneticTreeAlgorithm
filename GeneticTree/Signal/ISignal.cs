@@ -18,7 +18,9 @@ namespace GeneticTree.Signal
 
         bool IsTrue();
 
-        ISignal Sibling { get; set; }
+        ISignal Child { get; set; }
+
+        ISignal Parent { get; set; }
 
         Operator Operator { get; set; }
 

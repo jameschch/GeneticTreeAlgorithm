@@ -22,7 +22,9 @@ namespace GeneticTree.Signal
 
         public Operator Operator { get; set; }
 
-        public ISignal Sibling { get; set; }
+        public ISignal Child { get; set; }
+
+        public ISignal Parent { get; set; }
 
         public bool IsTrue()
         {
