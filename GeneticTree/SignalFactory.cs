@@ -91,7 +91,7 @@ namespace GeneticTree
 
                 case TechicalIndicators.Stochastic:
                     var sto = _algorithm.STO(pair, _period, _resolution);
-                    signal = new OscillatorSignal(sto.StochD, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(sto, oscillatorThresholds, direction);
                     break;
 
                 case TechicalIndicators.RelativeStrengthIndex:
