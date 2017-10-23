@@ -58,10 +58,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GeneticTreeAlgorithm.cs" />
     <Compile Include="BooleanLogicParser\Parser.cs" />
     <Compile Include="BooleanLogicParser\Tokenizer.cs" />
     <Compile Include="BooleanLogicParser\Tokens.cs" />
+    <Compile Include="GeneticTreeAlgorithmExample.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="Signal\SignalBase.cs" />
