@@ -22,6 +22,22 @@ namespace GeneticTree
         Resolution _resolution;
         private bool _enableParameterLog = false;
 
+        public enum TechnicalIndicator
+        {
+            None = -1,
+            SimpleMovingAverage = 0,
+            MovingAverageConvergenceDivergence = 1,
+            Stochastic = 2,
+            RelativeStrengthIndex = 3,
+            CommodityChannelIndex = 4,
+            MomentumPercent = 5,
+            WilliamsPercentR = 6,
+            PercentagePriceOscillator = 7,
+            AverageDirectionalIndex = 8,
+            //AverageTrueRange = 9
+            //BollingerBands = 10
+        }
+
         public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour)
         {
             _algorithm = algorithm;
@@ -63,73 +79,79 @@ namespace GeneticTree
 
         protected override ISignal CreateIndicator(Symbol pair, int i, string entryOrExit)
         {
-            var oscillatorThresholds = new OscillatorThresholds { Lower = 20, Upper = 80 };
             var key = entryOrExit + "Indicator" + i + "Direction";
             var intDirection = GetConfigValue(key);
 
-            var direction = intDirection == 0 ? TradeRuleDirection.LongOnly : TradeRuleDirection.ShortOnly;
+            var direction = intDirection == 0 ? Direction.LongOnly : Direction.ShortOnly;
 
             key = entryOrExit + "Indicator" + i;
 
-            var indicator = (TechicalIndicators)GetConfigValue(key);
+            var indicator = (TechnicalIndicator)GetConfigValue(key);
             ISignal signal = null;
 
             switch (indicator)
             {
-                case TechicalIndicators.SimpleMovingAverage:
+                case TechnicalIndicator.SimpleMovingAverage:
                     var fast = _algorithm.SMA(pair, _period, _resolution);
                     var slow = _algorithm.SMA(pair, _period, _resolution);
                     signal = new CrossingMovingAverageSignal(fast, slow, direction);
                     break;
 
-                case TechicalIndicators.MovingAverageConvergenceDivergence:
+                case TechnicalIndicator.MovingAverageConvergenceDivergence:
                     var macd = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution);
                     signal = new CrossingMovingAverageSignal(macd, macd.Signal, direction);
                     break;
 
-                case TechicalIndicators.Stochastic:
+                case TechnicalIndicator.Stochastic:
                     var sto = _algorithm.STO(pair, _period, _resolution);
-                    signal = new OscillatorSignal(sto, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(sto, direction);
                     break;
 
-                case TechicalIndicators.RelativeStrengthIndex:
+                case TechnicalIndicator.RelativeStrengthIndex:
                     var rsi = _algorithm.RSI(pair, _period);
-                    signal = new OscillatorSignal(rsi, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(rsi, new[] { 30, 70 }, direction);
                     break;
 
-                case TechicalIndicators.CommodityChannelIndex:
+                case TechnicalIndicator.CommodityChannelIndex:
                     var cci = _algorithm.CCI(pair, _period, MovingAverageType.Simple, _resolution);
-                    oscillatorThresholds.Lower = -100;
-                    oscillatorThresholds.Lower = 100;
-                    signal = new OscillatorSignal(cci, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(cci, new[] { -100, 100 }, direction);
                     break;
 
-                case TechicalIndicators.MomentumPercent:
+                case TechnicalIndicator.MomentumPercent:
                     var pm = _algorithm.MOMP(pair, _period, _resolution);
-                    oscillatorThresholds.Lower = -5;
-                    oscillatorThresholds.Lower = 5;
-                    signal = new OscillatorSignal(pm, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(pm, new[] { -5, 5 }, direction);
                     break;
 
-                case TechicalIndicators.WilliamsPercentR:
+                case TechnicalIndicator.WilliamsPercentR:
                     var wr = _algorithm.WILR(pair, _period, _resolution);
-                    signal = new OscillatorSignal(wr, oscillatorThresholds, direction);
+                    signal = new OscillatorSignal(wr, direction);
                     break;
 
-                case TechicalIndicators.PercentagePriceOscillator:
+                case TechnicalIndicator.PercentagePriceOscillator:
                     var ppo = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution).Over(_algorithm.EMA(pair, _period, resolution: _resolution))
                         .Plus(constant: 100m);
                     var compound = new SimpleMovingAverage(_period).Of(ppo);
                     signal = new CrossingMovingAverageSignal(ppo, compound, direction);
                     break;
 
-                case TechicalIndicators.None:
+                case TechnicalIndicator.None:
                     signal = new EmptySignal();
                     break;
 
-                case TechicalIndicators.BollingerBands:
+                case TechnicalIndicator.AverageDirectionalIndex:
+                    var adx = _algorithm.ADX(pair, _period, _resolution);
+                    signal = new OscillatorSignal(adx, new[] { 25, 25 }, direction);
+                    break;
+
+                    //todo:
+                    //case TechnicalIndicator.AverageTrueRange:
+                    //    var atr = _algorithm.ATR(pair, _period, MovingAverageType.Simple, _resolution);
+                    //    signal = new OscillatorSignal(atr, oscillatorThresholds, direction);
+                    //    break;
+
                     //todo: bollinger bands setup
-                    throw new NotImplementedException("WIP");
+                    //case TechicalIndicators.BollingerBands:
+                    //    throw new NotImplementedException("WIP");
             }
 
             return signal;

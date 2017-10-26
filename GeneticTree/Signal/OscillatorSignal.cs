@@ -6,25 +6,6 @@ using System.Linq;
 
 namespace GeneticTree.Signal
 {
-    /// <summary>
-    ///     Possibles states of an oscillator respect to its thresholds.
-    /// </summary>
-    public enum OscillatorSignals
-    {
-        CrossLowerThresholdFromAbove = -3,
-        BellowLowerThreshold = -2,
-        CrossLowerThresholdFromBelow = -1,
-        BetweenThresholds = 0,
-        CrossUpperThresholdFromBelow = 3,
-        AboveUpperThreshold = 2,
-        CrossUpperThresholdFromAbove = 1
-    }
-
-    public struct OscillatorThresholds
-    {
-        public decimal Lower;
-        public decimal Upper;
-    }
 
     /// <summary>
     ///     This class keeps track of an oscillator respect to its thresholds and updates an <see cref="OscillatorSignal" />
@@ -34,24 +15,38 @@ namespace GeneticTree.Signal
     public class OscillatorSignal : SignalBase
     {
         private decimal _previousIndicatorValue;
-        private OscillatorSignals _previousSignal;
-        private OscillatorThresholds _thresholds;
-        private TradeRuleDirection _tradeRuleDirection;
+        private ThresholdState _previousSignal;
+        private int[] _thresholds;
+        private Direction _direction;
+        static int[] defaultThresholds = new int[2] { 20, 80 };
+
+        /// <summary>
+        ///     Possibles states of an oscillator respect to its thresholds.
+        /// </summary>
+        public enum ThresholdState
+        {
+            CrossLowerFromAbove = -3,
+            BelowLower = -2,
+            CrossLowerFromBelow = -1,
+            InBetween = 0,
+            CrossUpperFromBelow = 3,
+            AboveUpper = 2,
+            CrossUpperFromAbove = 1
+        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="OscillatorSignal" /> class.
         /// </summary>
         /// <param name="indicator">The indicator.</param>
         /// <param name="thresholds">The thresholds.</param>
-        /// <param name="tradeRuleDirection">
+        /// <param name="direction">
         ///     The trade rule direction. Only used if the instance will be part of a
         ///     <see cref="Rule" /> class
         /// </param>
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-        public OscillatorSignal(dynamic indicator, OscillatorThresholds thresholds,
-            TradeRuleDirection tradeRuleDirection)
+        public OscillatorSignal(dynamic indicator, int[] thresholds, Direction direction)
         {
-            Initialize(ref indicator, ref thresholds, tradeRuleDirection);
+            Initialize(indicator, thresholds, direction);
         }
 
         /// <summary>
@@ -60,9 +55,14 @@ namespace GeneticTree.Signal
         /// <param name="indicator">The indicator.</param>
         /// <param name="thresholds">The thresholds.</param>
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-        public OscillatorSignal(dynamic indicator, OscillatorThresholds thresholds)
+        public OscillatorSignal(dynamic indicator, int[] thresholds)
         {
-            Initialize(ref indicator, ref thresholds);
+            Initialize(indicator, thresholds, Direction.LongOnly);
+        }
+
+        public OscillatorSignal(dynamic indicator, Direction direction)
+        {
+            Initialize(indicator, defaultThresholds, direction);
         }
 
         /// <summary>
@@ -72,8 +72,7 @@ namespace GeneticTree.Signal
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
         public OscillatorSignal(dynamic indicator)
         {
-            var defaultThresholds = new OscillatorThresholds { Lower = 20, Upper = 80 };
-            Initialize(ref indicator, ref defaultThresholds);
+            Initialize(indicator, defaultThresholds, Direction.LongOnly);
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace GeneticTree.Signal
         /// <summary>
         ///     Gets the actual state of the oscillator.
         /// </summary>
-        public OscillatorSignals Signal { get; private set; }
+        public ThresholdState Signal { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance is ready.
@@ -101,7 +100,7 @@ namespace GeneticTree.Signal
         ///     Gets the signal. Only used if the instance will be part of a <see cref="Rule" /> class.
         /// </summary>
         /// <returns>
-        ///     <c>true</c> if the actual <see cref="Signal" /> correspond with the instance <see cref="TradeRuleDirection" />.
+        ///     <c>true</c> if the actual <see cref="Signal" /> correspond with the instance <see cref="Direction" />.
         ///     <c>false</c>
         ///     otherwise.
         /// </returns>
@@ -110,14 +109,14 @@ namespace GeneticTree.Signal
             var signal = false;
             if (IsReady)
             {
-                switch (_tradeRuleDirection)
+                switch (_direction)
                 {
-                    case TradeRuleDirection.LongOnly:
-                        signal = Signal == OscillatorSignals.CrossLowerThresholdFromBelow;
+                    case Direction.LongOnly:
+                        signal = Signal == ThresholdState.CrossLowerFromBelow;
                         break;
 
-                    case TradeRuleDirection.ShortOnly:
-                        signal = Signal == OscillatorSignals.CrossUpperThresholdFromAbove;
+                    case Direction.ShortOnly:
+                        signal = Signal == ThresholdState.CrossUpperFromAbove;
                         break;
                 }
             }
@@ -129,7 +128,7 @@ namespace GeneticTree.Signal
         /// </summary>
         private void Indicator_Updated(object sender, IndicatorDataPoint updated)
         {
-            var actualPositionSignal = GetActualPositionSignal(updated);
+            var actualPositionSignal = GetThresholdState(updated);
             if (!Indicator.IsReady)
             {
                 _previousIndicatorValue = updated.Value;
@@ -150,16 +149,16 @@ namespace GeneticTree.Signal
         /// </summary>
         /// <param name="indicatorCurrentValue">The indicator current value.</param>
         /// <returns></returns>
-        private OscillatorSignals GetActualPositionSignal(decimal indicatorCurrentValue)
+        private ThresholdState GetThresholdState(decimal indicatorCurrentValue)
         {
-            var positionSignal = OscillatorSignals.BetweenThresholds;
-            if (indicatorCurrentValue > _thresholds.Upper)
+            var positionSignal = ThresholdState.InBetween;
+            if (indicatorCurrentValue > _thresholds[1])
             {
-                positionSignal = OscillatorSignals.AboveUpperThreshold;
+                positionSignal = ThresholdState.AboveUpper;
             }
-            else if (indicatorCurrentValue < _thresholds.Lower)
+            else if (indicatorCurrentValue < _thresholds[0])
             {
-                positionSignal = OscillatorSignals.BellowLowerThreshold;
+                positionSignal = ThresholdState.BelowLower;
             }
             return positionSignal;
         }
@@ -170,54 +169,54 @@ namespace GeneticTree.Signal
         /// <param name="previousSignal">The previous signal.</param>
         /// <param name="actualPositionSignal">The actual position signal.</param>
         /// <returns></returns>
-        private OscillatorSignals GetActualSignal(OscillatorSignals previousSignal,
-            OscillatorSignals actualPositionSignal)
+        private ThresholdState GetActualSignal(ThresholdState previousSignal, ThresholdState actualPositionSignal)
         {
-            OscillatorSignals actualSignal;
-            var previousSignalInt = (int)previousSignal;
-            var actualPositionSignalInt = (int)actualPositionSignal;
+            ThresholdState actualSignal;
+            var previous = (int)previousSignal;
+            var current = (int)actualPositionSignal;
 
-            if (actualPositionSignalInt == 0)
+            if (current == 0)
             {
-                if (Math.Abs(previousSignalInt) > 1)
+                if (Math.Abs(previous) > 1)
                 {
-                    actualSignal = (OscillatorSignals)Math.Sign(previousSignalInt);
+                    actualSignal = (ThresholdState)Math.Sign(previous);
                 }
                 else
                 {
-                    actualSignal = OscillatorSignals.BetweenThresholds;
+                    actualSignal = ThresholdState.InBetween;
                 }
             }
             else
             {
-                if (previousSignalInt * actualPositionSignalInt <= 0 ||
-                    Math.Abs(previousSignalInt + actualPositionSignalInt) == 3)
+                if (previous * current <= 0 || Math.Abs(previous + current) == 3)
                 {
-                    actualSignal = (OscillatorSignals)(Math.Sign(actualPositionSignalInt) * 3);
+                    actualSignal = (ThresholdState)(Math.Sign(current) * 3);
                 }
                 else
                 {
-                    actualSignal = (OscillatorSignals)(Math.Sign(actualPositionSignalInt) * 2);
+                    actualSignal = (ThresholdState)(Math.Sign(current) * 2);
                 }
             }
             return actualSignal;
         }
 
         /// <summary>
-        ///     Sets up class.
+        /// Sets up class.
         /// </summary>
         /// <param name="indicator">The indicator.</param>
         /// <param name="thresholds">The thresholds.</param>
-        /// <param name="tradeRuleDirection">The trade rule direction.</param>
-        private void Initialize(ref dynamic indicator, ref OscillatorThresholds thresholds,
-            TradeRuleDirection? tradeRuleDirection = null)
+        /// <param name="direction">The trade rule direction.</param>
+        private void Initialize(dynamic indicator, int[] thresholds, Direction direction)
         {
             _thresholds = thresholds;
             Indicator = indicator;
             indicator.Updated += new IndicatorUpdatedHandler(Indicator_Updated);
-            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection)tradeRuleDirection;
         }
 
+        /// <summary>
+        /// Exposes a means to update underlying indicator
+        /// </summary>
+        /// <param name="data"></param>
         public override void Update(BaseData data)
         {
             if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IBaseDataBar>)))
@@ -235,7 +234,6 @@ namespace GeneticTree.Signal
             {
                 Indicator.Update(data);
             }
-
 
             base.Update(data);
         }

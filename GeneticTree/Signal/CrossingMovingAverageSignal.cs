@@ -22,7 +22,7 @@ namespace GeneticTree.Signal
     public class CrossingMovingAverageSignal : SignalBase
     {
         private readonly CompositeIndicator<IndicatorDataPoint> _moving_average_difference;
-        private readonly TradeRuleDirection _tradeRuleDirection;
+        private readonly Direction _direction;
         private int _lastSignal;
         IndicatorBase<IndicatorDataPoint> _fast { get; set; }
         IndicatorBase<IndicatorDataPoint> _slow { get; set; }
@@ -32,7 +32,7 @@ namespace GeneticTree.Signal
         /// </summary>
         /// <param name="fast">The fast moving average.</param>
         /// <param name="slow">The slow moving average.</param>
-        /// <param name="tradeRuleDirection">
+        /// <param name="direction">
         ///     The trade rule direction. Only used if the instance will be part of a
         ///     <see cref="Rule" /> class
         /// </param>
@@ -40,13 +40,13 @@ namespace GeneticTree.Signal
         ///     Both Moving Averages must be registered BEFORE being used by this constructor.
         /// </remarks>
         public CrossingMovingAverageSignal(IndicatorBase<IndicatorDataPoint> fast,
-            IndicatorBase<IndicatorDataPoint> slow, TradeRuleDirection? tradeRuleDirection = null)
+            IndicatorBase<IndicatorDataPoint> slow, Direction? direction = null)
         {
             _fast = fast;
             _slow = slow;
             _moving_average_difference = fast.Minus(slow);
             _moving_average_difference.Updated += ma_Updated;
-            if (tradeRuleDirection != null) _tradeRuleDirection = (TradeRuleDirection)tradeRuleDirection;
+            if (direction != null) _direction = (Direction)direction;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace GeneticTree.Signal
         ///     Gets the signal. Only used if the instance will be part of a <see cref="Rule" /> class.
         /// </summary>
         /// <returns>
-        ///     <c>true</c> if the actual <see cref="Signal" /> correspond with the instance <see cref="TradeRuleDirection" />.
+        ///     <c>true</c> if the actual <see cref="Signal" /> correspond with the instance <see cref="Direction" />.
         ///     <c>false</c>
         ///     otherwise.
         /// </returns>
@@ -78,13 +78,13 @@ namespace GeneticTree.Signal
             var signal = false;
             if (IsReady)
             {
-                switch (_tradeRuleDirection)
+                switch (_direction)
                 {
-                    case TradeRuleDirection.LongOnly:
+                    case Direction.LongOnly:
                         signal = Signal == CrossingMovingAveragesSignals.FastCrossSlowFromBelow;
                         break;
 
-                    case TradeRuleDirection.ShortOnly:
+                    case Direction.ShortOnly:
                         signal = Signal == CrossingMovingAveragesSignals.FastCrossSlowFromAbove;
                         break;
                 }
