@@ -211,6 +211,7 @@ namespace GeneticTree.Signal
             _thresholds = thresholds;
             Indicator = indicator;
             indicator.Updated += new IndicatorUpdatedHandler(Indicator_Updated);
+            _direction = direction;
         }
 
         /// <summary>
