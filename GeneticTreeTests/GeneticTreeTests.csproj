@@ -60,11 +60,11 @@
     </Reference>
     <Reference Include="QuantConnect.Algorithm, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean_Latest\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+      <HintPath>..\..\Lean\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Common, Version=2.4.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean_Latest\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
