@@ -26,6 +26,8 @@ namespace GeneticTree.Signal
 
         public ISignal Parent { get; set; }
 
+        public string Name { get { return "Empty"; } }
+
         public bool IsTrue()
         {
             return _isTrue;
