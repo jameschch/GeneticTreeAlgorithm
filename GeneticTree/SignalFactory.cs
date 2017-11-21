@@ -128,8 +128,8 @@ namespace GeneticTree
                     break;
 
                 case TechnicalIndicator.PercentagePriceOscillator:
-                    var ppo = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution).Over(_algorithm.EMA(pair, _period, resolution: _resolution))
-                        .Plus(constant: 100m);
+                    var ppo = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution)
+                        .Over(_algorithm.EMA(pair, _period, resolution: _resolution)).Plus(constant: 100m);
                     var compound = new SimpleMovingAverage(_period).Of(ppo);
                     signal = new CrossingMovingAverageSignal(ppo, compound, direction);
                     break;

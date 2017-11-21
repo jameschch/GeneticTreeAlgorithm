@@ -96,6 +96,8 @@ namespace GeneticTree.Signal
             get { return Indicator.IsReady; }
         }
 
+        public override string Name { get { return ((string)Indicator.GetType().ToString()).Split('.').Last(); } }
+
         /// <summary>
         ///     Gets the signal. Only used if the instance will be part of a <see cref="Rule" /> class.
         /// </summary>

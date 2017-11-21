@@ -26,6 +26,8 @@ namespace GeneticTree.Signal
         private int _lastSignal;
         IndicatorBase<IndicatorDataPoint> _fast { get; set; }
         IndicatorBase<IndicatorDataPoint> _slow { get; set; }
+		//todo: name
+        public override string Name { get { return "CrossingMovingAverageSignal"; } }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CrossingMovingAverageSignal" /> class.
@@ -40,13 +42,13 @@ namespace GeneticTree.Signal
         ///     Both Moving Averages must be registered BEFORE being used by this constructor.
         /// </remarks>
         public CrossingMovingAverageSignal(IndicatorBase<IndicatorDataPoint> fast,
-            IndicatorBase<IndicatorDataPoint> slow, Direction? direction = null)
+            IndicatorBase<IndicatorDataPoint> slow, Direction direction)
         {
             _fast = fast;
             _slow = slow;
             _moving_average_difference = fast.Minus(slow);
             _moving_average_difference.Updated += ma_Updated;
-            if (direction != null) _direction = (Direction)direction;
+            _direction = direction;
         }
 
         /// <summary>
@@ -116,9 +118,25 @@ namespace GeneticTree.Signal
         }
         public override void Update(BaseData data)
         {
-            _fast.Update(new IndicatorDataPoint(data.Time, data.Price));
-            _slow.Update(new IndicatorDataPoint(data.Time, data.Price));
+            var point = new IndicatorDataPoint(data.Time, data.Price);
+            AttemptCompositeUpdate(_fast, point);
+            AttemptCompositeUpdate(_slow, point);
+            _fast.Update(point);
+            _slow.Update(point);
             base.Update(data);
         }
+
+        private void AttemptCompositeUpdate(IndicatorBase<IndicatorDataPoint> indicator, IndicatorDataPoint point)
+        {
+            if (indicator.GetType() == typeof(CompositeIndicator<IndicatorDataPoint>))
+            {
+                var composite = ((CompositeIndicator<IndicatorDataPoint>)indicator);
+                composite.Left.Update(point);
+                composite.Right.Update(point);
+                AttemptCompositeUpdate(composite.Left, point);
+                AttemptCompositeUpdate(composite.Right, point);
+            }
+        }
+
     }
 }

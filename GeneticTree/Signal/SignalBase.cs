@@ -19,6 +19,8 @@ namespace GeneticTree.Signal
 
         public abstract bool IsReady { get; }
 
+        public abstract string Name { get; }
+
         public abstract bool IsTrue();
 
         public virtual void Update(BaseData data)
