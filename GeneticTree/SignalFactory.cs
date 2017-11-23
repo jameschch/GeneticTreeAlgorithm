@@ -34,8 +34,10 @@ namespace GeneticTree
             WilliamsPercentR = 6,
             PercentagePriceOscillator = 7,
             AverageDirectionalIndex = 8,
-            //AverageTrueRange = 9
-            //BollingerBands = 10
+            NormalizedAverageTrueRange = 9,
+            BollingerBands = 10,
+            ExponentialMovingAverage = 11,
+            ChannelBreakout = 12
         }
 
         public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour)
@@ -143,17 +145,32 @@ namespace GeneticTree
                     signal = new OscillatorSignal(adx, new[] { 25, 25 }, direction);
                     break;
 
-                    //todo:
-                    //case TechnicalIndicator.AverageTrueRange:
-                    //    var atr = _algorithm.ATR(pair, _period, MovingAverageType.Simple, _resolution);
-                    //    signal = new OscillatorSignal(atr, oscillatorThresholds, direction);
-                    //    break;
+                //todo:
+                case TechnicalIndicator.NormalizedAverageTrueRange:
+                    signal = new EmptySignal();
+                    break;
 
-                    //todo: bollinger bands setup
-                    //case TechicalIndicators.BollingerBands:
-                    //    throw new NotImplementedException("WIP");
+                case TechnicalIndicator.BollingerBands:
+                    var bb = _algorithm.BB(pair, period: _period, k: 2);
+                    signal = new BBOscillatorSignal(bb, direction);
+                    break;
+
+                case TechnicalIndicator.ExponentialMovingAverage:
+                    var fastema = _algorithm.EMA(pair, _fastPeriod);
+                    var slowema = _algorithm.EMA(pair, _slowPeriod);
+                    signal = new CrossingMovingAverageSignal(fastema, slowema, direction);
+                    break;
+
+                case TechnicalIndicator.ChannelBreakout:
+                    var delay = new Delay(5);
+                    var _max = delay.Of(_algorithm.MAX(pair, _period));
+                    var _min = delay.Of(_algorithm.MIN(pair, _period));
+                    var cur = _algorithm.MAX(pair, 1); //current value
+                    signal = new ChannelOscillatorSignal(cur, _max, _min, direction);
+                    break;
             }
 
+            signal.Name = indicator.ToString();
             return signal;
         }
 
