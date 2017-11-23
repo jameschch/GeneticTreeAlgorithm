@@ -26,8 +26,6 @@ namespace GeneticTree.Signal
         private int _lastSignal;
         IndicatorBase<IndicatorDataPoint> _fast { get; set; }
         IndicatorBase<IndicatorDataPoint> _slow { get; set; }
-		//todo: name
-        public override string Name { get { return "CrossingMovingAverageSignal"; } }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CrossingMovingAverageSignal" /> class.

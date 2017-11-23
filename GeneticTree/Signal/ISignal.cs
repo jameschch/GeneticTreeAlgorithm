@@ -26,7 +26,7 @@ namespace GeneticTree.Signal
 
         void Update(BaseData data);
 
-        string Name { get; }
+        string Name { get; set; }
     }
 
     public enum Direction

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QuantConnect.Indicators;
-using QuantConnect.Data;
+﻿using QuantConnect.Data;
 
 namespace GeneticTree.Signal
 {
@@ -19,7 +13,7 @@ namespace GeneticTree.Signal
 
         public abstract bool IsReady { get; }
 
-        public abstract string Name { get; }
+        public string Name { get; set; }
 
         public abstract bool IsTrue();
 
