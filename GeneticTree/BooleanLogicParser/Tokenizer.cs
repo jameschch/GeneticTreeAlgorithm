@@ -1,49 +1,51 @@
-﻿//https://github.com/spavkov/BooleanLogicExpressionParser
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace GeneticTree.BooleanLogicParser
 {
+
+    /// <summary>
+    /// Derived from https://github.com/spavkov/BooleanLogicExpressionParser
+    /// </summary>
     public class Tokenizer
     {
-        private readonly StringReader _reader;
         private string _text;
 
+        private int i = 0;
         public Tokenizer(string text)
         {
             _text = text;
-            _reader = new StringReader(text);
         }
 
         public IEnumerable<Token> Tokenize()
         {
+
             var tokens = new List<Token>();
-            while (_reader.Peek() != -1)
+            while (_text.Length > i)
             {
-                while (Char.IsWhiteSpace((char) _reader.Peek()))
+                while (Char.IsWhiteSpace((char) _text[i]))
                 {
-                    _reader.Read();
+                    i++;
                 }
 
-                if (_reader.Peek() == -1)
+                if (_text.Length <= i)
                     break;
 
-                var c = (char) _reader.Peek();
+                var c = (char) _text[i];
                 switch (c)
                 {
                     case '!':
                         tokens.Add(new NegationToken());
-                        _reader.Read();
+                        i++;
                         break;
                     case '(':
                         tokens.Add(new OpenParenthesisToken());
-                        _reader.Read();
+                        i++;
                         break;
                     case ')':
                         tokens.Add(new ClosedParenthesisToken());
-                        _reader.Read();
+                        i++;
                         break;
                     default:
                         if (Char.IsLetter(c))
@@ -53,7 +55,7 @@ namespace GeneticTree.BooleanLogicParser
                         }
                         else
                         {
-                            var remainingText = _reader.ReadToEnd() ?? string.Empty;
+                            var remainingText = _text.Substring(i) ?? string.Empty;
                             throw new Exception(string.Format("Unknown grammar found at position {0} : '{1}'", _text.Length - remainingText.Length, remainingText));
                         }
                         break;
@@ -64,10 +66,11 @@ namespace GeneticTree.BooleanLogicParser
 
         private Token ParseKeyword()
         {
-            var text = new StringBuilder();
-            while (Char.IsLetter((char) _reader.Peek()))
+            var text = "";
+            while (_text.Length > i && Char.IsLetter((char) _text[i]))
             {
-                text.Append((char) _reader.Read());
+                text = text + ((char) _text[i]);
+                i++;
             }
 
             var potentialKeyword = text.ToString().ToLower();

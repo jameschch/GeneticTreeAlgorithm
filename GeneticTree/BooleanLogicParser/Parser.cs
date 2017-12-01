@@ -1,17 +1,19 @@
-﻿//https://github.com/spavkov/BooleanLogicExpressionParser
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace GeneticTree.BooleanLogicParser
-{
-    // Expression         := [ "!" ] <Boolean> { <BooleanOperator> <Boolean> } ...
-    // Boolean            := <BooleanConstant> | <Expression> | "(" <Expression> ")"
-    // BooleanOperator    := "And" | "Or" 
-    // BooleanConstant    := "True" | "False"
+{    
+    /// <summary>
+    /// Derived from https://github.com/spavkov/BooleanLogicExpressionParser
+    /// </summary>
     public class Parser
     {
-        private readonly IEnumerator<Token> _tokens;
+        // Expression         := [ "!" ] <Boolean> { <BooleanOperator> <Boolean> } ...
+        // Boolean            := <BooleanConstant> | <Expression> | "(" <Expression> ")"
+        // BooleanOperator    := "And" | "Or" 
+        // BooleanConstant    := "True" | "False"
 
+        private readonly IEnumerator<Token> _tokens;
 
         public Parser(IEnumerable<Token> tokens)
         {

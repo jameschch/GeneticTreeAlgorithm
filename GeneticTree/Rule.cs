@@ -3,7 +3,6 @@ using GeneticTree.Signal;
 using QuantConnect.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GeneticTree
 {
@@ -25,7 +24,7 @@ namespace GeneticTree
 
         public bool IsTrue()
         {
-            StringBuilder expression = new StringBuilder();
+            var expression = "";
 
             foreach (var item in List)
             {
@@ -41,30 +40,30 @@ namespace GeneticTree
                     isTrue += ")";
                 }
 
-                expression.Append(isTrue);
+                expression += isTrue;
 
                 if (item.Child != null)
                 {
                     if (item.Operator == Operator.And)
                     {
-                        expression.Append(" and ");
+                        expression += " and ";
                     }
                     else if (new[] { Operator.Or, Operator.OrInclusive }.Contains(item.Operator))
                     {
-                        expression.Append(" or ");
+                        expression += " or ";
                     }
                     else if (item.Operator == Operator.Not)
                     {
-                        expression.Append(" and !");
+                        expression += " and !";
                     }
                     else if (new[] { Operator.Nor, Operator.NorInclusive }.Contains(item.Operator))
                     {
-                        expression.Append(" or !");
+                        expression += " or !";
                     }
                 }
             }
 
-            var tokens = new Tokenizer(expression.ToString()).Tokenize();
+            var tokens = new Tokenizer(expression).Tokenize();
             var parser = new Parser(tokens);
             return parser.Parse();
         }
@@ -72,6 +71,16 @@ namespace GeneticTree
         public void Update(BaseData data)
         {
             List.First().Update(data);
+        }
+
+        public string Status()
+        {
+            var builder = "";
+            foreach (var item in List)
+            {
+                builder += $"Name:{item.Name} Operator:{item.Operator} IsReady:{item.IsReady} IsTrue:{item.IsTrue()}, ";
+            }
+            return builder.Trim(", ".ToArray());
         }
 
     }

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using QuantConnect.Configuration;
-using QuantConnect.Indicators;
+﻿using GeneticTree.Signal;
 using QuantConnect;
 using QuantConnect.Algorithm;
-using GeneticTree.Signal;
+using QuantConnect.Configuration;
+using QuantConnect.Indicators;
+using System;
+using System.Collections.Generic;
 
 namespace GeneticTree
 {

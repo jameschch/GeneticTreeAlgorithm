@@ -231,6 +231,18 @@ namespace GeneticTree.Signal
                 {
                     Indicator.Update((IBaseDataBar)data);
                 }
+                else if (data.GetType() == typeof(Tick))
+                {
+                    var tick = (Tick)data;
+                    Indicator.Update(new TradeBar
+                    {
+                        High = tick.AskPrice,
+                        Low = tick.BidPrice,
+                        Value = tick.Value,
+                        Time = tick.Time,
+                        Symbol = tick.Symbol
+                    });
+                }
             }
             else if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IndicatorDataPoint>)))
             {

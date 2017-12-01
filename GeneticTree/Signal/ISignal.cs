@@ -1,10 +1,7 @@
 using QuantConnect.Data;
-using QuantConnect.Indicators;
-using System.Collections.Generic;
 
 namespace GeneticTree.Signal
 {
-
 
     public interface ISignal
     {

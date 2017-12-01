@@ -1,6 +1,10 @@
-﻿//https://github.com/spavkov/BooleanLogicExpressionParser
+﻿
 namespace GeneticTree.BooleanLogicParser
 {
+
+    /// <summary>
+    /// Derived from https://github.com/spavkov/BooleanLogicExpressionParser
+    /// </summary>
     public class OperandToken : Token
     {
         

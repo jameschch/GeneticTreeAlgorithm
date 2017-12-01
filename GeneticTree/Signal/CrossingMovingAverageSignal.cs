@@ -27,6 +27,9 @@ namespace GeneticTree.Signal
         IndicatorBase<IndicatorDataPoint> _fast { get; set; }
         IndicatorBase<IndicatorDataPoint> _slow { get; set; }
 
+
+
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="CrossingMovingAverageSignal" /> class.
         /// </summary>

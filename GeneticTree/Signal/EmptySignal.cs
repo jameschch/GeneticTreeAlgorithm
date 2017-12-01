@@ -2,6 +2,7 @@
 
 namespace GeneticTree.Signal
 {
+
     public class EmptySignal : ISignal
     {
 
