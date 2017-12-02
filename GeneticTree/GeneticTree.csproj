@@ -66,6 +66,7 @@
     <Compile Include="Rule.cs" />
     <Compile Include="Signal\BBOscillatorSignals.cs" />
     <Compile Include="Signal\ChannelOscillatorSignal.cs" />
+    <Compile Include="Signal\DonchianSignal.cs" />
     <Compile Include="Signal\SignalBase.cs" />
     <Compile Include="SignalFactory.cs" />
     <Compile Include="Signal\CrossingMovingAverageSignal.cs" />

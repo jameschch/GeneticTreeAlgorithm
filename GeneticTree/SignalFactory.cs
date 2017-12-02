@@ -22,6 +22,7 @@ namespace GeneticTree
         Resolution _resolution;
         private bool _enableParameterLog = false;
         private bool _ignorePeriod = false;
+        private bool _enableSurvival;
 
         public enum TechnicalIndicator
         {
@@ -38,15 +39,18 @@ namespace GeneticTree
             NormalizedAverageTrueRange = 9,
             BollingerBands = 10,
             ExponentialMovingAverage = 11,
-            ChannelBreakout = 12
+            ChannelBreakout = 12,
+            DonchianTrend = 13
         }
 
-        public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false)
+        public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false,
+            bool enableSurvival = false)
         {
             _algorithm = algorithm;
             _resolution = resolution;
             var entryOrExit = isEntryRule ? "Entry" : "Exit";
             _ignorePeriod = ignorePeriod;
+            _enableSurvival = enableSurvival;
 
             if (!_ignorePeriod)
             {
@@ -111,7 +115,7 @@ namespace GeneticTree
 
                 case TechnicalIndicator.Stochastic:
                     var sto = _algorithm.STO(pair, _ignorePeriod ? 14 : _period, _resolution);
-                    signal = new OscillatorSignal(sto, direction);
+                    signal = new OscillatorSignal(sto, direction, _enableSurvival ? 3 : 1);
                     break;
 
                 case TechnicalIndicator.RelativeStrengthIndex:
@@ -157,7 +161,7 @@ namespace GeneticTree
 
                 case TechnicalIndicator.BollingerBands:
                     var bb = _algorithm.BB(pair, _ignorePeriod ? 20 : _period, k: 2);
-                    signal = new BBOscillatorSignal(bb, direction);
+                    signal = new BBOscillatorSignal(bb, direction, _enableSurvival ? 4 : 1);
                     break;
 
                 case TechnicalIndicator.ExponentialMovingAverage:
@@ -171,7 +175,13 @@ namespace GeneticTree
                     var _max = delay.Of(_algorithm.MAX(pair, _ignorePeriod ? 20 : _period));
                     var _min = delay.Of(_algorithm.MIN(pair, _ignorePeriod ? 20 : _period));
                     var cur = _algorithm.MAX(pair, 1); //current value
-                    signal = new ChannelOscillatorSignal(cur, _max, _min, direction);
+                    signal = new ChannelOscillatorSignal(cur, _max, _min, direction, _enableSurvival ? 4 : 1);
+                    break;
+
+                case TechnicalIndicator.DonchianTrend:
+                    var donchian = _algorithm.DCH(pair, _ignorePeriod ? 20 : _period);
+                    var max = _algorithm.MAX(pair, _ignorePeriod ? 1 : _period);
+                    signal = new DonchianSignal(max, donchian, 2, direction);
                     break;
             }
 
@@ -203,7 +213,8 @@ namespace GeneticTree
 
     public abstract class AbstractSignalFactory
     {
-        public abstract Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false);
+        public abstract Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false,
+            bool enableSurvival = false);
         protected abstract ISignal CreateIndicator(Symbol pair, int i, string entryOrExit);
         protected abstract int GetConfigValue(string key);
     }

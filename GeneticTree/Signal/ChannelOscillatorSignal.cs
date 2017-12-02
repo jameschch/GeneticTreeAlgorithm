@@ -26,8 +26,8 @@ namespace GeneticTree.Signal
             /// </summary>
             /// <param name="indicator">The indicator.</param>
             /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-            public ChannelOscillatorSignal(IndicatorBase<IndicatorDataPoint> price, IndicatorBase<IndicatorDataPoint> max, IndicatorBase<IndicatorDataPoint> min, Direction direction) 
-            : base(price, direction)
+            public ChannelOscillatorSignal(IndicatorBase<IndicatorDataPoint> price, IndicatorBase<IndicatorDataPoint> max, IndicatorBase<IndicatorDataPoint> min, Direction direction, int survivalPeriod) 
+			: base(price, direction, survivalPeriod)
             {
 
                 max.Updated += new IndicatorUpdatedHandler(Max_Updated);

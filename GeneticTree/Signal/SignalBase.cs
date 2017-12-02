@@ -1,4 +1,5 @@
 ﻿using QuantConnect.Data;
+using QuantConnect.Indicators;
 
 namespace GeneticTree.Signal
 {
@@ -24,6 +25,8 @@ namespace GeneticTree.Signal
                 Child.Update(data);
             }
         }
+
+        protected RollingWindow<int> SurvivalWindow;
 
     }
 }

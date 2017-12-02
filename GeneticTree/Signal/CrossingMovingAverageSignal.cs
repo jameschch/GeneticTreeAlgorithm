@@ -43,13 +43,14 @@ namespace GeneticTree.Signal
         ///     Both Moving Averages must be registered BEFORE being used by this constructor.
         /// </remarks>
         public CrossingMovingAverageSignal(IndicatorBase<IndicatorDataPoint> fast,
-            IndicatorBase<IndicatorDataPoint> slow, Direction direction)
+            IndicatorBase<IndicatorDataPoint> slow, Direction direction, int survivalPeriod = 1)
         {
             _fast = fast;
             _slow = slow;
             _moving_average_difference = fast.Minus(slow);
             _moving_average_difference.Updated += ma_Updated;
             _direction = direction;
+            SurvivalWindow = new RollingWindow<int>(survivalPeriod);
         }
 
         /// <summary>
@@ -84,11 +85,19 @@ namespace GeneticTree.Signal
                 switch (_direction)
                 {
                     case Direction.LongOnly:
-                        signal = Signal == CrossingMovingAveragesSignals.FastCrossSlowFromBelow;
+                        foreach(CrossingMovingAveragesSignals state in SurvivalWindow)
+                        {
+                            signal = state == CrossingMovingAveragesSignals.FastCrossSlowFromBelow;
+                            if (signal) break;
+                        }
                         break;
 
                     case Direction.ShortOnly:
-                        signal = Signal == CrossingMovingAveragesSignals.FastCrossSlowFromAbove;
+                        foreach(CrossingMovingAveragesSignals state in SurvivalWindow)
+                        {
+                            signal = state == CrossingMovingAveragesSignals.FastCrossSlowFromAbove;
+                            if (signal) break;
+                        }
                         break;
                 }
             }
@@ -114,7 +123,7 @@ namespace GeneticTree.Signal
             {
                 Signal = CrossingMovingAveragesSignals.FastCrossSlowFromAbove;
             }
-
+            SurvivalWindow.Add((int)Signal);
             _lastSignal = actualSignal;
         }
         public override void Update(BaseData data)

@@ -44,9 +44,9 @@ namespace GeneticTree.Signal
         ///     <see cref="Rule" /> class
         /// </param>
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-        public OscillatorSignal(dynamic indicator, int[] thresholds, Direction direction)
+        public OscillatorSignal(dynamic indicator, int[] thresholds, Direction direction, int survivalPeriod = 1)
         {
-            Initialize(indicator, thresholds, direction);
+            Initialize(indicator, thresholds, direction, survivalPeriod);
         }
 
         /// <summary>
@@ -55,14 +55,14 @@ namespace GeneticTree.Signal
         /// <param name="indicator">The indicator.</param>
         /// <param name="thresholds">The thresholds.</param>
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-        public OscillatorSignal(dynamic indicator, int[] thresholds)
+        public OscillatorSignal(dynamic indicator, int[] thresholds, int survivalPeriod = 1)
         {
-            Initialize(indicator, thresholds, Direction.LongOnly);
+            Initialize(indicator, thresholds, Direction.LongOnly, survivalPeriod);
         }
 
-        public OscillatorSignal(dynamic indicator, Direction direction)
+        public OscillatorSignal(dynamic indicator, Direction direction, int survivalPeriod = 1)
         {
-            Initialize(indicator, defaultThresholds, direction);
+            Initialize(indicator, defaultThresholds, direction, survivalPeriod);
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace GeneticTree.Signal
         /// </summary>
         /// <param name="indicator">The indicator.</param>
         /// <remarks>The oscillator must be registered BEFORE being used by this constructor.</remarks>
-        public OscillatorSignal(dynamic indicator)
+        public OscillatorSignal(dynamic indicator, int survivalPeriod = 1)
         {
-            Initialize(indicator, defaultThresholds, Direction.LongOnly);
+            Initialize(indicator, defaultThresholds, Direction.LongOnly, survivalPeriod);
         }
 
         /// <summary>
@@ -112,11 +112,19 @@ namespace GeneticTree.Signal
                 switch (_direction)
                 {
                     case Direction.LongOnly:
-                        signal = Signal == ThresholdState.CrossLowerFromBelow;
+                        foreach (ThresholdState state in SurvivalWindow)
+                        {
+                            signal = state == ThresholdState.CrossLowerFromBelow;
+                            if (signal) break;
+                        }
                         break;
 
                     case Direction.ShortOnly:
-                        signal = Signal == ThresholdState.CrossUpperFromAbove;
+                        foreach (ThresholdState state in SurvivalWindow)
+                        {
+                            signal = state == ThresholdState.CrossUpperFromAbove;
+                            if (signal) break;
+                        }
                         break;
                 }
             }
@@ -146,6 +154,7 @@ namespace GeneticTree.Signal
 
             Signal = actualSignal;
             _previousIndicatorValue = updated.Value;
+            SurvivalWindow.Add((int)Signal);
             _previousSignal = actualSignal;
         }
 
@@ -211,12 +220,13 @@ namespace GeneticTree.Signal
         /// <param name="indicator">The indicator.</param>
         /// <param name="thresholds">The thresholds.</param>
         /// <param name="direction">The trade rule direction.</param>
-        private void Initialize(dynamic indicator, int[] thresholds, Direction direction)
+        private void Initialize(dynamic indicator, int[] thresholds, Direction direction, int survivalPeriod = 1)
         {
             _thresholds = thresholds;
             Indicator = indicator;
             indicator.Updated += new IndicatorUpdatedHandler(Indicator_Updated);
             _direction = direction;
+            SurvivalWindow = new RollingWindow<int>(survivalPeriod);
         }
 
         /// <summary>
