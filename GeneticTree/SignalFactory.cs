@@ -21,6 +21,7 @@ namespace GeneticTree
         QCAlgorithm _algorithm;
         Resolution _resolution;
         private bool _enableParameterLog = false;
+        private bool _ignorePeriod = false;
 
         public enum TechnicalIndicator
         {
@@ -40,16 +41,20 @@ namespace GeneticTree
             ChannelBreakout = 12
         }
 
-        public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour)
+        public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false)
         {
             _algorithm = algorithm;
             _resolution = resolution;
             var entryOrExit = isEntryRule ? "Entry" : "Exit";
+            _ignorePeriod = ignorePeriod;
 
-            _period = GetConfigValue("period");
-            _slowPeriod = GetConfigValue("slowPeriod");
-            _fastPeriod = GetConfigValue("fastPeriod");
-            _signalPeriod = GetConfigValue("signalPeriod");
+            if (!_ignorePeriod)
+            {
+                _period = GetConfigValue("period");
+                _slowPeriod = GetConfigValue("slowPeriod");
+                _fastPeriod = GetConfigValue("fastPeriod");
+                _signalPeriod = GetConfigValue("signalPeriod");
+            }
 
             ISignal parent = null;
             List<ISignal> list = new List<ISignal>();
@@ -94,45 +99,45 @@ namespace GeneticTree
             switch (indicator)
             {
                 case TechnicalIndicator.SimpleMovingAverage:
-                    var fast = _algorithm.SMA(pair, _period, _resolution);
-                    var slow = _algorithm.SMA(pair, _period, _resolution);
+                    var fast = _algorithm.SMA(pair, _ignorePeriod ? 50 : _period, _resolution);
+                    var slow = _algorithm.SMA(pair, _ignorePeriod ? 200 : _period, _resolution);
                     signal = new CrossingMovingAverageSignal(fast, slow, direction);
                     break;
 
                 case TechnicalIndicator.MovingAverageConvergenceDivergence:
-                    var macd = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution);
+                    var macd = _algorithm.MACD(pair, _ignorePeriod ? 12 : _fastPeriod, _ignorePeriod ? 26 : _slowPeriod, _ignorePeriod ? 9 : _signalPeriod, MovingAverageType.Simple, _resolution);
                     signal = new CrossingMovingAverageSignal(macd, macd.Signal, direction);
                     break;
 
                 case TechnicalIndicator.Stochastic:
-                    var sto = _algorithm.STO(pair, _period, _resolution);
+                    var sto = _algorithm.STO(pair, _ignorePeriod ? 14 : _period, _resolution);
                     signal = new OscillatorSignal(sto, direction);
                     break;
 
                 case TechnicalIndicator.RelativeStrengthIndex:
-                    var rsi = _algorithm.RSI(pair, _period);
+                    var rsi = _algorithm.RSI(pair, _ignorePeriod ? 11 : _period);
                     signal = new OscillatorSignal(rsi, new[] { 30, 70 }, direction);
                     break;
 
                 case TechnicalIndicator.CommodityChannelIndex:
-                    var cci = _algorithm.CCI(pair, _period, MovingAverageType.Simple, _resolution);
+                    var cci = _algorithm.CCI(pair, _ignorePeriod ? 20 : _period, MovingAverageType.Simple, _resolution);
                     signal = new OscillatorSignal(cci, new[] { -100, 100 }, direction);
                     break;
 
                 case TechnicalIndicator.MomentumPercent:
-                    var pm = _algorithm.MOMP(pair, _period, _resolution);
+                    var pm = _algorithm.MOMP(pair, _ignorePeriod ? 60 : _period, _resolution);
                     signal = new OscillatorSignal(pm, new[] { -5, 5 }, direction);
                     break;
 
                 case TechnicalIndicator.WilliamsPercentR:
-                    var wr = _algorithm.WILR(pair, _period, _resolution);
-                    signal = new OscillatorSignal(wr, direction);
+                    var wr = _algorithm.WILR(pair, _ignorePeriod ? 14 : _period, _resolution);
+                    signal = new OscillatorSignal(wr, new[] { -20, -80 }, direction);
                     break;
 
                 case TechnicalIndicator.PercentagePriceOscillator:
-                    var ppo = _algorithm.MACD(pair, _fastPeriod, _slowPeriod, _signalPeriod, MovingAverageType.Simple, _resolution)
-                        .Over(_algorithm.EMA(pair, _period, resolution: _resolution)).Plus(constant: 100m);
-                    var compound = new SimpleMovingAverage(_period).Of(ppo);
+                    var ppo = _algorithm.MACD(pair, _ignorePeriod ? 12 : _fastPeriod, _ignorePeriod ? 26 : _slowPeriod, _ignorePeriod ? 9 : _signalPeriod, MovingAverageType.Simple, _resolution)
+                        .Over(_algorithm.EMA(pair, _ignorePeriod ? 120 : _period, resolution: _resolution)).Plus(constant: 100m);
+                    var compound = new SimpleMovingAverage(_ignorePeriod ? 120 : _period).Of(ppo);
                     signal = new CrossingMovingAverageSignal(ppo, compound, direction);
                     break;
 
@@ -141,7 +146,7 @@ namespace GeneticTree
                     break;
 
                 case TechnicalIndicator.AverageDirectionalIndex:
-                    var adx = _algorithm.ADX(pair, _period, _resolution);
+                    var adx = _algorithm.ADX(pair, _ignorePeriod ? 20 : _period, _resolution);
                     signal = new OscillatorSignal(adx, new[] { 25, 25 }, direction);
                     break;
 
@@ -151,20 +156,20 @@ namespace GeneticTree
                     break;
 
                 case TechnicalIndicator.BollingerBands:
-                    var bb = _algorithm.BB(pair, period: _period, k: 2);
+                    var bb = _algorithm.BB(pair, _ignorePeriod ? 20 : _period, k: 2);
                     signal = new BBOscillatorSignal(bb, direction);
                     break;
 
                 case TechnicalIndicator.ExponentialMovingAverage:
-                    var fastema = _algorithm.EMA(pair, _fastPeriod);
-                    var slowema = _algorithm.EMA(pair, _slowPeriod);
+                    var fastema = _algorithm.EMA(pair, _ignorePeriod ? 50 : _fastPeriod);
+                    var slowema = _algorithm.EMA(pair, _ignorePeriod ? 200 : _slowPeriod);
                     signal = new CrossingMovingAverageSignal(fastema, slowema, direction);
                     break;
 
                 case TechnicalIndicator.ChannelBreakout:
                     var delay = new Delay(5);
-                    var _max = delay.Of(_algorithm.MAX(pair, _period));
-                    var _min = delay.Of(_algorithm.MIN(pair, _period));
+                    var _max = delay.Of(_algorithm.MAX(pair, _ignorePeriod ? 20 : _period));
+                    var _min = delay.Of(_algorithm.MIN(pair, _ignorePeriod ? 20 : _period));
                     var cur = _algorithm.MAX(pair, 1); //current value
                     signal = new ChannelOscillatorSignal(cur, _max, _min, direction);
                     break;
@@ -198,7 +203,7 @@ namespace GeneticTree
 
     public abstract class AbstractSignalFactory
     {
-        public abstract Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour);
+        public abstract Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false);
         protected abstract ISignal CreateIndicator(Symbol pair, int i, string entryOrExit);
         protected abstract int GetConfigValue(string key);
     }
