@@ -18,6 +18,8 @@ namespace GeneticTree.Signal
 
         public abstract bool IsTrue();
 
+        public abstract decimal Value { get; }
+
         public virtual void Update(BaseData data)
         {
             if (Child != null)

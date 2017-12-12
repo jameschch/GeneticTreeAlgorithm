@@ -14,8 +14,8 @@ namespace GeneticTree
         private Rule _entry;
         private Rule _exit;
         private Symbol _symbol;
-        private readonly bool IsOutOfSampleRun = false;
-        private readonly int oosPeriod = 3;
+        private readonly bool IsOutOfSampleRun = true;
+        private readonly int oosPeriod = 6;
 
         public override void Initialize()
         {
@@ -26,8 +26,8 @@ namespace GeneticTree
             if (IsOutOfSampleRun)
             {
                 var startDate = new DateTime(year: 2016, month: 1, day: 1);
-                SetEndDate(startDate.AddMonths(oosPeriod));
                 SetStartDate(startDate);
+                SetEndDate(startDate.AddMonths(oosPeriod));
                 RuntimeStatistics["ID"] = GetParameter("ID");
                 SetParameters(config.ToDictionary(k => k.Key, v => v.Value.ToString()));
             }
@@ -38,9 +38,7 @@ namespace GeneticTree
 
             SetBenchmark(_symbol);
 
-           
-
-            var factory = new SignalFactory();
+            var factory = new SignalFactory(7);
 
             _entry = factory.Create(this, _symbol, true);
             _exit = factory.Create(this, _symbol, false);
@@ -73,37 +71,41 @@ namespace GeneticTree
             {"EntryIndicator3",  -1},
             {"EntryIndicator4",  2},
             {"EntryIndicator5",  3},
+            {"EntryIndicator6",  4},
+            {"EntryIndicator7",  5},
             {"EntryIndicator1Direction",  0},
             {"EntryIndicator2Direction",  0},
             {"EntryIndicator3Direction",  1},
             {"EntryIndicator4Direction",  0},
             {"EntryIndicator5Direction",  1},
+            {"EntryIndicator6Direction",  1},
+            {"EntryIndicator7Direction",  1},
             {"EntryOperator1",  0},
             {"EntryOperator2",  1},
             {"EntryOperator3",  0},
             {"EntryOperator4",  0},
-            {"EntryRelationship1",  0},
-            {"EntryRelationship2",  1},
-            {"EntryRelationship3",  1},
-            {"EntryRelationship4",  0},
+            {"EntryOperator5",  0},
+            {"EntryOperator6",  0},
             {"ExitIndicator1",  6},
-            {"ExitIndicator2",  5},
-            {"ExitIndicator3",  4},
-            {"ExitIndicator4",  -1},
-            {"ExitIndicator5",  2},
+            {"ExitIndicator2",  7},
+            {"ExitIndicator3",  8},
+            {"ExitIndicator4",  9},
+            {"ExitIndicator5",  10},
+            {"ExitIndicator6",  11},
+            {"ExitIndicator7",  12},
             {"ExitIndicator1Direction",  0},
             {"ExitIndicator2Direction",  0},
             {"ExitIndicator3Direction",  1},
             {"ExitIndicator4Direction",  1},
             {"ExitIndicator5Direction",  0},
+            {"ExitIndicator6Direction",  0},
+            {"ExitIndicator7Direction",  0},
             {"ExitOperator1",  0},
             {"ExitOperator2",  0},
             {"ExitOperator3",  0},
             {"ExitOperator4",  1},
-            {"ExitRelationship1",  0},
-            {"ExitRelationship2",  1},
-            {"ExitRelationship3",  0},
-            {"ExitRelationship4",  1},
+            {"ExitOperator5",  0},
+            {"ExitOperator6",  0},
             {"period",  1},
             {"slowPeriod",  2},
             {"fastPeriod",  3},

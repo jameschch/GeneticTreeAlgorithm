@@ -24,6 +24,8 @@ namespace GeneticTree.Signal
         void Update(BaseData data);
 
         string Name { get; set; }
+
+        decimal Value { get; }
     }
 
     public enum Direction

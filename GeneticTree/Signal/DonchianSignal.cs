@@ -19,6 +19,7 @@ namespace GeneticTree.Signal
         private IndicatorBase<IndicatorDataPoint> _upperBand;
         private IndicatorBase<IndicatorDataPoint> _lowerBand;
         private DonchianChannel _donchian;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="DonchianSignal" /> class.
         /// </summary>
@@ -54,6 +55,11 @@ namespace GeneticTree.Signal
         public override bool IsReady
         {
             get { return Indicator.IsReady && _donchian.IsReady; }
+        }
+
+        public override decimal Value
+        {
+            get { return Indicator.Current.Value; }
         }
 
         /// <summary>

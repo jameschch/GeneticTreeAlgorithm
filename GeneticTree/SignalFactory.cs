@@ -43,6 +43,11 @@ namespace GeneticTree
             DonchianTrend = 13
         }
 
+        public SignalFactory(int maximumSignals = 5)
+        {
+            _maximumSignals = maximumSignals;
+        }
+
         public override Rule Create(QCAlgorithm algorithm, Symbol symbol, bool isEntryRule, Resolution resolution = Resolution.Hour, bool ignorePeriod = false,
             bool enableSurvival = false)
         {

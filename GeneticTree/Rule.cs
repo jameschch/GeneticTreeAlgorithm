@@ -78,7 +78,7 @@ namespace GeneticTree
             var builder = "";
             foreach (var item in List)
             {
-                builder += $"Name:{item.Name} Operator:{item.Operator} IsReady:{item.IsReady} IsTrue:{item.IsTrue()}, ";
+                builder += $"Name:{item.Name} Operator:{item.Operator} IsReady:{item.IsReady} IsTrue:{item.IsTrue()} Value:{item.Value}, ";
             }
             return builder.Trim(", ".ToArray());
         }

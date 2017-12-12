@@ -23,6 +23,11 @@ namespace GeneticTree.Signal
 
         public string Name { get; set; }
 
+        public decimal Value
+        {
+            get { return 1m; }
+        }
+
         public bool IsTrue()
         {
             return _isTrue;

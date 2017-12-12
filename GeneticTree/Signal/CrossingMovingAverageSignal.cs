@@ -69,6 +69,12 @@ namespace GeneticTree.Signal
             get { return _moving_average_difference.IsReady; }
         }
 
+        public override decimal Value
+        {
+            get { return _moving_average_difference.Current.Value; }
+        }
+
+
         /// <summary>
         ///     Gets the signal. Only used if the instance will be part of a <see cref="Rule" /> class.
         /// </summary>
