@@ -59,7 +59,7 @@ namespace GeneticTree.Signal
 
         public override decimal Value
         {
-            get { return Indicator.Current.Value; }
+            get { return SurvivalWindow[0]; }
         }
 
         /// <summary>
