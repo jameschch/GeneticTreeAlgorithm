@@ -22,6 +22,11 @@ namespace GeneticTree.Signal
             _bb = indicator;
         }
 
+        public override decimal Value
+        {
+            get { return (decimal)GetThresholdState(Indicator.Current.Value); }
+        }
+
         /// <summary>
         ///     Gets the actual position respect to the thresholds.
         /// </summary>
@@ -40,5 +45,6 @@ namespace GeneticTree.Signal
             }
             return positionSignal;
         }
+
     }
 }
