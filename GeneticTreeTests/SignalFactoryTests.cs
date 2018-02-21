@@ -23,7 +23,7 @@ namespace GeneticTree.Tests
         [Test()]
         public void CreateTest()
         {
-            var unit = new SignalFactoryWrapper();
+            var unit = new SignalFactoryWrapper(7);
 
             var fakeAlgorithm = (QCAlgorithm)FormatterServices.GetUninitializedObject(typeof(QCAlgorithm));
 
@@ -32,9 +32,9 @@ namespace GeneticTree.Tests
             fakeAlgorithm.SubscriptionManager = new SubscriptionManagerWrapper(fakeSymbol, null, null);
 
             //todo: remaining indicators
-            var expectedEntry = new[] { "None", "SimpleMovingAverage", "MovingAverageConvergenceDivergence", "Stochastic", "RelativeStrengthIndex" };
+            var expectedEntry = new[] { "None", "SimpleMovingAverage", "MovingAverageConvergenceDivergence", "Stochastic", "RelativeStrengthIndex", "NormalizedAverageTrueRange", "BollingerBands" };
 
-            var expectedExit = new[] {  "CommodityChannelIndex", "MomentumPercent", "WilliamsPercentR", "PercentagePriceOscillator", "AverageDirectionalIndex" };
+            var expectedExit = new[] { "CommodityChannelIndex", "MomentumPercent", "WilliamsPercentR", "PercentagePriceOscillator", "AverageDirectionalIndex", "ExponentialMovingAverage", "ChannelBreakout" };
 
             var actual = unit.Create(fakeAlgorithm, fakeSymbol, true);
 
@@ -59,39 +59,55 @@ namespace GeneticTree.Tests
         protected class SignalFactoryWrapper : SignalFactory
         {
 
+            public SignalFactoryWrapper(int signals) : base(signals)
+            {
+            }
+
             private static Dictionary<string, int> config = new Dictionary<string, int> {
-                {"EntryIndicator1",  0},
-                {"EntryIndicator2",  1},
-                {"EntryIndicator3",  -1},
-                {"EntryIndicator4",  2},
-                {"EntryIndicator5",  3},
-                {"EntryIndicator1Direction",  0},
-                {"EntryIndicator2Direction",  0},
-                {"EntryIndicator3Direction",  1},
-                {"EntryIndicator4Direction",  0},
-                {"EntryIndicator5Direction",  1},
-                {"EntryOperator1",  0},
-                {"EntryOperator2",  1},
-                {"EntryOperator3",  2},
-                {"EntryOperator4",  3},
-                {"ExitIndicator1",  4},
-                {"ExitIndicator2",  5},
-                {"ExitIndicator3",  6},
-                {"ExitIndicator4",  7},
-                {"ExitIndicator5",  8},
-                {"ExitIndicator1Direction",  0},
-                {"ExitIndicator2Direction",  0},
-                {"ExitIndicator3Direction",  1},
-                {"ExitIndicator4Direction",  1},
-                {"ExitIndicator5Direction",  0},
-                {"ExitOperator1",  4},
-                {"ExitOperator2",  5},
-                {"ExitOperator3",  0},
-                {"ExitOperator4",  1},
-                {"period",  1},
-                {"slowPeriod",  2},
-                {"fastPeriod",  3},
-                {"signalPeriod",  4 }
+                {"EntryIndicator1", 0},
+                {"EntryIndicator2", 1},
+                {"EntryIndicator3", -1},
+                {"EntryIndicator4", 2},
+                {"EntryIndicator5", 3},
+                {"EntryIndicator6", 9},
+                {"EntryIndicator7", 10},
+                {"EntryIndicator1Direction", 0},
+                {"EntryIndicator2Direction", 0},
+                {"EntryIndicator3Direction", 1},
+                {"EntryIndicator4Direction", 0},
+                {"EntryIndicator5Direction", 1},
+                {"EntryIndicator6Direction", 1},
+                {"EntryIndicator7Direction", 1},
+                {"EntryOperator1", 0},
+                {"EntryOperator2", 1},
+                {"EntryOperator3", 2},
+                {"EntryOperator4", 3},
+                {"EntryOperator5", 4},
+                {"EntryOperator6", 4},
+                {"ExitIndicator1", 4},
+                {"ExitIndicator2", 5},
+                {"ExitIndicator3", 6},
+                {"ExitIndicator4", 7},
+                {"ExitIndicator5", 8},
+                {"ExitIndicator6", 11},
+                {"ExitIndicator7", 12},
+                {"ExitIndicator1Direction", 0},
+                {"ExitIndicator2Direction", 0},
+                {"ExitIndicator3Direction", 1},
+                {"ExitIndicator4Direction", 1},
+                {"ExitIndicator5Direction", 0},
+                {"ExitIndicator6Direction", 0},
+                {"ExitIndicator7Direction", 0},
+                {"ExitOperator1", 4},
+                {"ExitOperator2", 5},
+                {"ExitOperator3", 0},
+                {"ExitOperator4", 1},
+                {"ExitOperator5", 1},
+                {"ExitOperator6", 4},
+                {"period", 1},
+                {"slowPeriod", 2},
+                {"fastPeriod", 3},
+                {"signalPeriod", 4 }
             };
 
             protected override int GetConfigValue(string key)
