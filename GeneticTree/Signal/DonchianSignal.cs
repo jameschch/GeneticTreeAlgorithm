@@ -36,7 +36,7 @@ namespace GeneticTree.Signal
             //donchian.UpperBand.Updated += new IndicatorUpdatedHandler(Max_Updated);
             //donchian.LowerBand.Updated += new IndicatorUpdatedHandler(Min_Updated);
             _donchian = donchian;
-            _upperBand = donchian.UpperBand; 
+            _upperBand = donchian.UpperBand;
             _lowerBand = donchian.LowerBand;
             SurvivalWindow = new RollingWindow<int>(periods);
             indicator.Updated += new IndicatorUpdatedHandler(Price_Updated);
@@ -141,7 +141,7 @@ namespace GeneticTree.Signal
         {
             if (IsReady)
             {
-                if (updated.Value >= _upperBand.Current.Value )
+                if (updated.Value >= _upperBand.Current.Value)
                 {
                     SurvivalWindow.Add(1);
                 }
@@ -162,21 +162,8 @@ namespace GeneticTree.Signal
         /// <param name="data"></param>
         public override void Update(BaseData data)
         {
-            if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IBaseDataBar>)))
-            {
-                if (data.GetType().GetInterfaces().Contains(typeof(IBaseDataBar)))
-                {
-                    Indicator.Update((IBaseDataBar)data);
-                }
-            }
-            else if (Indicator.GetType().IsSubclassOf(typeof(IndicatorBase<IndicatorDataPoint>)))
-            {
-                Indicator.Update(new IndicatorDataPoint(data.Time, data.Value));
-            }
-            else
-            {
-                Indicator.Update(data);
-            }
+            _donchian.Update((IBaseDataBar)data);
+            Indicator.Update(new IndicatorDataPoint(data.Time, data.Value));
 
             base.Update(data);
         }
