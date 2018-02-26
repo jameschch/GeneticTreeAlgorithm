@@ -161,7 +161,8 @@ namespace GeneticTree
 
                 //todo:
                 case TechnicalIndicator.NormalizedAverageTrueRange:
-                    signal = new EmptySignal();
+                    var natr = _algorithm.NATR(pair, _ignorePeriod ? 20 : _period, _resolution);
+                    signal = new OscillatorSignal(natr, new[] { 1, 1 }, direction);
                     break;
 
                 case TechnicalIndicator.BollingerBands:
