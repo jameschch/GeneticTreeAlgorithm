@@ -91,7 +91,7 @@ namespace GeneticTree.Signal
                 switch (_direction)
                 {
                     case Direction.LongOnly:
-                        foreach(CrossingMovingAveragesSignals state in SurvivalWindow)
+                        foreach (CrossingMovingAveragesSignals state in SurvivalWindow)
                         {
                             signal = state == CrossingMovingAveragesSignals.FastCrossSlowFromBelow;
                             if (signal) break;
@@ -99,7 +99,7 @@ namespace GeneticTree.Signal
                         break;
 
                     case Direction.ShortOnly:
-                        foreach(CrossingMovingAveragesSignals state in SurvivalWindow)
+                        foreach (CrossingMovingAveragesSignals state in SurvivalWindow)
                         {
                             signal = state == CrossingMovingAveragesSignals.FastCrossSlowFromAbove;
                             if (signal) break;
@@ -132,13 +132,20 @@ namespace GeneticTree.Signal
             SurvivalWindow.Add((int)Signal);
             _lastSignal = actualSignal;
         }
+
         public override void Update(BaseData data)
         {
             var point = new IndicatorDataPoint(data.Time, data.Price);
             AttemptCompositeUpdate(_fast, point);
             AttemptCompositeUpdate(_slow, point);
-            _fast.Update(point);
-            _slow.Update(point);
+            if (_fast.Current.EndTime != point.EndTime)
+            {
+                _fast.Update(point);
+            }
+            if (_slow.Current.EndTime != point.EndTime)
+            {
+                _slow.Update(point);
+            }
             base.Update(data);
         }
 

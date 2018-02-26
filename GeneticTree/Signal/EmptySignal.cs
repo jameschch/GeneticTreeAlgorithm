@@ -33,8 +33,12 @@ namespace GeneticTree.Signal
             return _isTrue;
         }
 
-        public void Update(BaseData data)
+        public virtual void Update(BaseData data)
         {
+            if (Child != null)
+            {
+                Child.Update(data);
+            }
         }
     }
 }
