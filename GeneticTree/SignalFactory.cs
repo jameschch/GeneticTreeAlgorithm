@@ -98,7 +98,7 @@ namespace GeneticTree
             var key = entryOrExit + "Indicator" + i + "Direction";
             var intDirection = GetConfigValue(key);
 
-            var direction = intDirection == 0 ? Direction.LongOnly : Direction.ShortOnly;
+            var direction = intDirection == 0  || intDirection == 1 ? Direction.LongOnly : Direction.ShortOnly;
 
             key = entryOrExit + "Indicator" + i;
 
